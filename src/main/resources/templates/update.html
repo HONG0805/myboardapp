@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>강남대학교 중고장터 내 정보</title>
+<link rel="stylesheet" type="text/css" href="/CSS/reset.css">
+<link rel="stylesheet" type="text/css" href="/CSS/update.css">
+<link rel="shortcut icon" href="/images/favicon/favicon.ico">
+<script src="https://kit.fontawesome.com/e1bd1cb2a5.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<link rel="apple-touch-icon-precomposed"
+	href="/images/favicon/flat-design-touch.png">
+<script src="/js/jquery.min.js"></script>
+<script type="text/javascript">
+        window.addEventListener('keyup', () => {
+            const btnBoard = document.getElementById('btn_board');
+            const bbsTitle = document.getElementById('bbs_title').value;
+            const bbsContent = document.getElementById('bbs_content').value;
+            const cost = document.getElementById('bbs_cost').value;
+
+            if (bbsTitle.length > 0 && bbsContent.length > 0 && cost.length > 0) {
+                btnBoard.disabled = false;
+                btnBoard.classList.add('active');
+            } else {
+                btnBoard.disabled = true;
+                btnBoard.classList.remove('active');
+            }
+        })
+    </script>
+</head>
+<body>
+	<div id="wrap">
+		<section class="info_section">
+			<ul class="info_list">
+				<li><a href="/view/pages/jjimBbs"><img
+						src="/images/s_images/free-icon-font-bell-3917226.png"
+						style="width: 30px; height: auto;" alt="">찜목록</a></li>
+				<li><a href="/view/pages/MyPage"><img
+						src="/images/s_images/free-icon-font-id-badge-3914510.png"
+						style="width: 30px; height: auto;" alt="">내정보</a></li>
+				<li><a href="/view/pages/Logout"><img
+						src="/images/s_images/free-icon-font-comments-5074600.png"
+						style="width: 30px; height: auto;" alt="">로그아웃</a></li>
+			</ul>
+		</section>
+
+		<header class="header">
+			<h1 class="logo">
+				<a href="/view/pages/MainPage"><img
+					src="/images/s_images/마크.png" style="width: 98px; height: auto;"
+					alt=""> <span id="logo_1">강남대학교</span> 중고장터</a>
+			</h1>
+		</header>
+
+		<section class="board_section">
+			<form method="post" action="/myPage/update?bbsID=${bbs.bbsID}"
+				enctype="multipart/form-data">
+				<div class="category_div">
+					<input type="text" autocapitalize="off" placeholder="제목을 입력해 주세요."
+						class="title" id="bbs_title" name="bbsTitle" maxlength="50"
+						th:value="${bbs.bbsTitle}">
+				</div>
+				<input type="file" name="uploadFile" class="folder_images">
+				<div class="category_div">
+					<input type="number" name="cost" class="title"
+						placeholder="가격을 입력해 주세요." maxlength="50" id="bbs_cost"
+						name="cost" th:value="${bbs.cost}">
+				</div>
+				<div class="article_content">
+					<textarea autocapitalize="off" placeholder="글을 작성해 주세요."
+						class="title" id="bbs_content" name="bbsContent" maxlength="2048"
+						th:text="${bbs.bbsContent}"></textarea>
+				</div>
+				<div class="btn_div">
+					<button type="submit" class="board_btn" id="btn_board" disabled>수정하기</button>
+				</div>
+			</form>
+		</section>
+	</div>
+</body>
+</html>

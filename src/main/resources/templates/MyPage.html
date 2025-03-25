@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>강남대학교 중고장터 내 정보</title>
+<link rel="stylesheet"
+	href="${{pageContext.request.contextPath}}/CSS/reset.css">
+<link rel="stylesheet"
+	href="${{pageContext.request.contextPath}}/CSS/MyPage.css?v=3.0">
+<link rel="shortcut icon"
+	href="${{pageContext.request.contextPath}}/images/favicon/favicon.ico">
+<link rel="apple-touch-icon-precomposed"
+	href="${{pageContext.request.contextPath}}/images/favicon/flat-design-touch.png">
+<script src="${{pageContext.request.contextPath}}/js/jquery.min.js"></script>
+</head>
+<body>
+	<div id="wrap">
+		<!-- User not logged in -->
+		<div th:if="${user == null}">
+			<section class="info_section">
+				<ul class="info_list">
+					<li><a href="/mainPage"><img
+							src="/images/s_images/free-icon-font-bell-3917226.png"
+							style="width: 30px;" alt="">메인홈</a></li>
+					<li><a href="/login"><img
+							src="/images/s_images/free-icon-font-id-badge-3914510.png"
+							style="width: 30px;" alt="">내정보</a></li>
+					<li><a href="/login"><img
+							src="/images/s_images/free-icon-font-comments-5074600.png"
+							style="width: 30px;" alt="">로그인</a></li>
+				</ul>
+			</section>
+
+			<header class="header">
+				<h1 class="logo">
+					<a href="/mainPage"><img src="/images/s_images/마크.png"
+						style="width: 98px;" alt=""> <span id="logo_1">강남대학교</span>
+						중고장터</a>
+				</h1>
+			</header>
+
+			<section class="sign_section">
+				<div class="signup">
+					<h2>로그인 후 이용가능 합니다.</h2>
+					<div>
+						<button class="loginbtn" onclick="location.href='/login'">로그인</button>
+					</div>
+					<div>
+						<button class="loginbtn" onclick="location.href='/signUp'">회원가입</button>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<!-- User logged in -->
+		<div th:if="${user != null}">
+			<section class="info_section">
+				<ul class="info_list">
+					<li><a href="/jjimBbs"><img
+							src="/images/s_images/free-icon-font-bell-3917226.png"
+							style="width: 30px;" alt="">찜목록</a></li>
+					<li><a href="/myPage"><img
+							src="/images/s_images/free-icon-font-id-badge-3914510.png"
+							style="width: 30px;" alt="">내정보</a></li>
+					<li><a href="/logout"><img
+							src="/images/s_images/free-icon-font-comments-5074600.png"
+							style="width: 30px;" alt="">로그아웃</a></li>
+				</ul>
+			</section>
+
+			<header class="header">
+				<h1 class="logo">
+					<a href="/mainPage"><img src="/images/s_images/마크.png"
+						style="width: 98px;" alt=""> <span id="logo_1">강남대학교</span>
+						중고장터</a>
+				</h1>
+			</header>
+
+			<section class="my_section">
+				<div class="my_info">
+					<h1>내 정보</h1>
+					<a href="/logout" class="logout">로그아웃</a>
+				</div>
+				<div class="my_profile">
+					<img src="/images/s_images/user-line.png">
+					<h3 th:text="${user.userID}">이름 없음</h3>
+					<p th:text="${user.userName}">이름 없음</p>
+				</div>
+			</section>
+
+			<section class="my_section_1">
+				<h2>계정</h2>
+				<a href="/mailCheck" class="item">이메일 인증</a> <a
+					href="/changePassword" class="item">비밀번호 변경</a>
+			</section>
+
+			<section class="chat_rooms_section">
+				<h2>내 채팅방</h2>
+				<div th:each="room : ${chatRooms}">
+					<div class="chat_room_item">
+						<p th:text="${room[1]}">알 수 없음</p>
+						<a th:href="@{${/chat}?roomID=${room[0]}}">채팅방 입장</a>
+					</div>
+				</div>
+				<p th:if="${chatRooms.isEmpty()}">채팅방이 없습니다.</p>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

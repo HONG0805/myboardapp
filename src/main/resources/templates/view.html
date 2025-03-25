@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>강남대학교 중고장터 내 정보</title>
+<link rel="stylesheet" href="/CSS/reset.css?v=3">
+<link rel="stylesheet" href="/CSS/view.css?v=4">
+<link rel="shortcut icon" href="/images/favicon/favicon.ico">
+<link rel="apple-touch-icon-precomposed"
+	href="/images/favicon/flat-design-touch.png">
+<script src="/js/jquery.min.js"></script>
+</head>
+<body>
+
+	<div id="wrap">
+		<!-- 로그인 여부에 따른 헤더 출력 -->
+		<div th:if="${userID == null}">
+			<section class="info_section">
+				<ul class="info_list">
+					<li><a href="/view/pages/MainPage.jsp"><img
+							src="/images/s_images/free-icon-font-bell-3917226.png"
+							style="width: 30px;" alt="">메인홈</a></li>
+					<li><a href="/view/pages/Login.jsp"><img
+							src="/images/s_images/free-icon-font-id-badge-3914510.png"
+							style="width: 30px;" alt="">내정보</a></li>
+					<li><a href="/view/pages/Login.jsp"><img
+							src="/images/s_images/free-icon-font-comments-5074600.png"
+							style="width: 30px;" alt="">로그인</a></li>
+				</ul>
+			</section>
+		</div>
+		<div th:if="${userID != null}">
+			<section class="info_section">
+				<ul class="info_list">
+					<li><a href="/view/pages/jjimBbs.jsp"><img
+							src="/images/s_images/free-icon-font-bell-3917226.png"
+							style="width: 30px;" alt="">찜목록</a></li>
+					<li><a href="/view/pages/MyPage.jsp"><img
+							src="/images/s_images/free-icon-font-id-badge-3914510.png"
+							style="width: 30px;" alt="">내정보</a></li>
+					<li><a href="/view/pages/Logout.jsp"><img
+							src="/images/s_images/free-icon-font-comments-5074600.png"
+							style="width: 30px;" alt="">로그아웃</a></li>
+				</ul>
+			</section>
+		</div>
+
+		<header class="header">
+			<h1 class="logo">
+				<a href="/view/pages/MainPage.jsp"><img
+					src="/images/s_images/마크.png" style="width: 98px;" alt=""> <span
+					id="logo_1">강남대학교</span> 중고장터</a>
+			</h1>
+		</header>
+
+		<section class="board_section">
+			<div class="category_div">
+				<p>
+					작성자: <span th:text="${bbs.userName}"></span>
+				</p>
+				<p>
+					작성일자: <span
+						th:text="${#dates.format(bbs.bbsDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+				</p>
+				<p style="font-size: 30px; font-weight: bold;">
+					<span th:text="${bbs.bbsTitle}"></span>
+				</p>
+				<p style="font-size: 15px; font-weight: bold;">
+					가격: <span th:text="${bbs.cost}"></span>원
+				</p>
+				<p>
+					<span th:text="${bbs.bbsContent}"></span>
+				</p>
+
+				<div class="button_group">
+					<button th:if="${!isJjim}" class="jjimbtn"
+						th:href="@{/view/utils/jjimAction.jsp(bbsID=${bbs.bbsID})}">찜하기</button>
+					<button th:if="${isJjim}" class="jjimbtn"
+						th:href="@{/view/utils/jjimAction.jsp(bbsID=${bbs.bbsID})}">찜해제</button>
+					<button class="chatbtn"
+						th:href="@{/view/actions/ChatAction.jsp(bbsID=${bbs.bbsID})}">채팅하기</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="reply_section">
+			<table class="table-striped">
+				<thead>
+					<tr>
+						<th colspan="3" class="reply_title">댓글</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="reply : ${replyList}">
+						<td style="text-align: left; width: 80%;">
+							<p style="font-weight: bold;">
+								작성자: <span th:text="${reply.userID}"></span>
+							</p>
+							<p style="font-size: 12px;">
+								작성일: <span
+									th:text="${#dates.format(reply.replyDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+							</p>
+							<p th:text="${reply.replyContent}"></p>
+						</td>
+						<td style="text-align: center;"><a
+							th:if="${reply.userID == userID}"
+							th:href="@{/view/actions/reply_deleteAction.jsp(bbsID=${bbs.bbsID}, replyID=${reply.replyID})}"
+							class="reply_delete" onclick="return confirm('정말로 삭제하시겠습니까?')">삭제</a>
+							<span th:if="${reply.userID != userID}">*</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section class="reply_section_1">
+			<form
+				th:action="@{/view/actions/replyAction.jsp(bbsID=${bbs.bbsID})}"
+				method="post">
+				<div class="table-striped_1">
+					<textarea name="replyContent" maxlength="2048" class="textarea_css"
+						placeholder="댓글을 입력하세요."></textarea>
+					<input type="submit" class="reply_btn" value="댓글입력">
+				</div>
+			</form>
+		</section>
+
+		<section class="board_section_1">
+			<div class="btn_div">
+				<a th:if="${userID == bbs.userName}"
+					th:href="@{/view/pages/update.jsp(bbsID=${bbs.bbsID})}"
+					class="btn_primary">수정</a> <a th:if="${userID == bbs.userName}"
+					th:href="@{/view/actions/deleteAction.jsp(bbsID=${bbs.bbsID})}"
+					class="btn_primary" onclick="return confirm('정말로 삭제하시겠습니까?')">삭제</a>
+				<a href="/view/pages/MainPage.jsp" class="back_list">목록</a>
+			</div>
+		</section>
+	</div>
+
+</body>
+</html>

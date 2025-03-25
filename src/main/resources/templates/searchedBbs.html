@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>강남대학교 중고장터</title>
+<link rel="stylesheet" type="text/css" href="/CSS/reset.css?v=1.0">
+<link rel="stylesheet" type="text/css" href="/CSS/searchedBbs.css?v=2.0">
+<link rel="shortcut icon" href="/images/favicon/favicon.ico">
+<link rel="apple-touch-icon-precomposed"
+	href="/images/favicon/flat-design-touch.png">
+<script src="/js/jquery.min.js"></script>
+</head>
+<body>
+	<div id="wrap">
+
+		<!-- 로그인/로그아웃 처리 -->
+		<section class="info_section">
+			<ul class="info_list">
+				<li><a href="/mainPage"><img
+						src="/images/s_images/free-icon-font-bell-3917226.png"
+						style="width: 30px; height: auto;" alt="">메인홈</a></li>
+				<li><a href="/login"><img
+						src="/images/s_images/free-icon-font-id-badge-3914510.png"
+						style="width: 30px; height: auto;" alt="">내정보</a></li>
+				<li><a href="/login"><img
+						src="/images/s_images/free-icon-font-comments-5074600.png"
+						style="width: 30px; height: auto;" alt="">로그인</a></li>
+			</ul>
+		</section>
+
+		<!-- 헤더 -->
+		<header class="header">
+			<h1 class="logo">
+				<a href="/mainPage"><img src="/images/s_images/마크.png"
+					style="width: 98px; height: auto;" alt=""> <span id="logo_1">강남대학교</span>
+					중고장터</a>
+			</h1>
+		</header>
+
+		<!-- 검색 섹션 -->
+		<section class="content_search">
+			<div class="content_row_2">
+				<form class="search" method="get" action="/searchedBbs">
+					<input type="text" name="searchWord" placeholder="검색어를 입력해주세요."
+						class="text" value="${searchWord}">
+					<button type="submit" class="search_check">
+						<img src="/images/s_images/search-line.png"
+							style="width: 20px; height: 20px;">
+					</button>
+				</form>
+			</div>
+		</section>
+
+		<!-- 게시글 리스트 -->
+		<section class="content_section">
+			<div class="content_article">
+				<a href="/board" id="writeArticleButton">새글을 작성해주세요.<img
+					src="/images/s_images/pen-nib-line.png" class="writeimg"></a>
+			</div>
+
+			<!-- 게시글 출력 -->
+			<div th:each="bbs : ${bbsList}">
+				<div style="text-align: center; border: 1px solid #dddddd">
+					<div class="comment">
+						<a th:href="@{/view/{bbsID}}?bbsID=${bbs.bbsID}">
+							<div align="left" class="bbstitle" th:text="${bbs.bbsTitle}"></div>
+							<div align="left" class="bbscontent">
+								<span th:text="${bbs.bbsContent}"></span>
+								<p>
+									가격: <span th:text="${bbs.cost}"></span>원
+								</p>
+							</div>
+							<div align="left" class="bbsdate">
+								<span
+									th:text="${#dates.format(bbs.bbsDate, 'yyyy-MM-dd HH:mm')}"></span>
+								<b>| 작성자:</b> <span th:text="${bbs.userName}"></span>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 페이지 네이션 -->
+		<footer class="pagination_footer">
+			<div class="pagination">
+				<a th:if="${pageNumber > 1}"
+					href="@{/searchedBbs(pageNumber=${pageNumber - 1})}" class="prev">이전</a>
+				<a th:if="${#lists.size(bbsList) > 0}"
+					href="@{/searchedBbs(pageNumber=${pageNumber + 1})}" class="next">다음</a>
+			</div>
+		</footer>
+
+	</div>
+</body>
+</html>

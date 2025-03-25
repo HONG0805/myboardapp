@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>아이디/비밀번호 찾기</title>
+<link rel="stylesheet" type="text/css" th:href="@{/CSS/reset.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/CSS/IdSearch_success.css}">
+<link rel="shortcut icon" th:href="@{/images/favicon/favicon.ico}">
+<link rel="apple-touch-icon-precomposed"
+	th:href="@{/images/favicon/flat-design-touch.png}">
+<script th:src="@{/js/jquery.min.js}"></script>
+</head>
+
+<body>
+	<div id="wrap">
+		<header class="header">
+			<h1>
+				<a th:href="@{/view/pages/Login.jsp}">Kangnam University</a>
+			</h1>
+			<div>
+				<h3>
+					<a th:href="@{/view/pages/Login.jsp}">중고장터</a>
+				</h3>
+			</div>
+		</header>
+
+		<section class="idsearch_section">
+			<div class="idsearch_success">
+				<h2>아이디 결과</h2>
+				<div th:if="${userID}" class="IDresult">
+					회원님의 아이디는 <span th:text="${userID}"></span> 입니다.
+				</div>
+
+				<div th:if="${userID == null}">
+					<h4 style="font-size: 14px;" th:text="${message}"></h4>
+				</div>
+
+				<div class="btn_IDsearch">
+					<input type="button" id="btnLogin" class="loginbtn" value="로그인"
+						th:onclick="'location.href=\'@{/view/pages/Login.jsp}\''" /> <input
+						type="button" id="btnLogin" class="loginbtn" value="비밀번호찾기"
+						th:onclick="'location.href=\'@{/view/pages/PwSearch.jsp}\''" /> <input
+						th:if="${userID == null}" type="button" id="btnLogin"
+						class="loginbtn" value="다시찾기"
+						th:onclick="'location.href=\'@{/view/pages/IdSearch.jsp}\''" /> <input
+						th:if="${userID == null}" type="button" id="btnLogin"
+						class="loginbtn" value="회원가입"
+						th:onclick="'location.href=\'@{/view/pages/SignUp.jsp}\''" />
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
+</html>
