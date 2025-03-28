@@ -1,16 +1,15 @@
 package com.github.hong0805.chat;
 
-import com.github.hong0805.chat.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-	@Query("SELECT cr FROM ChatRoom cr WHERE cr.bbsId = :bbsId AND (cr.user1Id = :userId OR cr.user2Id = :userId)")
-	Optional<ChatRoom> findByBbsIdAndUser(@Param("bbsId") Long bbsId, @Param("userId") String userId);
+public interface ChatRoomRepository extends JpaRepository<ChatRoom, Integer> {
+	// user1_id 또는 user2_id가 주어진 userID와 일치하는 채팅방을 찾아 반환
+	List<ChatRoom> findByUser1IDOrUser2ID(String user1ID, String user2ID);
 
-	@Query("SELECT cr FROM ChatRoom cr WHERE cr.user1Id = :userId OR cr.user2Id = :userId")
-	List<ChatRoom> findAllByUserId(@Param("userId") String userId);
+	// 게시물 ID와 사용자 ID로 기존 채팅방을 찾는 메서드 (작성된 쿼리와 관련된 메서드)
+	List<ChatRoom> findByBbsIDAndUser1IDOrUser2ID(int bbsID, String user1ID, String user2ID);
+	
+
 }

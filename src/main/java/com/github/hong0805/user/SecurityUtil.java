@@ -1,19 +1,18 @@
 package com.github.hong0805.user;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class SecurityUtil {
-	private static PasswordEncoder passwordEncoder;
 
-	public static void setPasswordEncoder(PasswordEncoder encoder) {
-		passwordEncoder = encoder;
+	private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+	// 비밀번호를 해시화하는 메서드
+	public static String hashPassword(String password) {
+		return passwordEncoder.encode(password);
 	}
 
-	public static String hashPassword(String rawPassword) {
-		return passwordEncoder.encode(rawPassword);
-	}
-
-	public static boolean matches(String rawPassword, String encodedPassword) {
+	// 비밀번호 비교하는 메서드
+	public static boolean checkPassword(String rawPassword, String encodedPassword) {
 		return passwordEncoder.matches(rawPassword, encodedPassword);
 	}
 }

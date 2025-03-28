@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> 
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>강남대학교 중고장터 내 정보</title>
-<link rel="stylesheet"
-	href="${{pageContext.request.contextPath}}/CSS/reset.css">
-<link rel="stylesheet"
-	href="${{pageContext.request.contextPath}}/CSS/MyPage.css?v=3.0">
-<link rel="shortcut icon"
-	href="${{pageContext.request.contextPath}}/images/favicon/favicon.ico">
+<link rel="stylesheet" href="/CSS/reset.css">
+<link rel="stylesheet" href="/CSS/MyPage.css?v=3.0">
+<link rel="shortcut icon" href="/images/favicon/favicon.ico">
 <link rel="apple-touch-icon-precomposed"
-	href="${{pageContext.request.contextPath}}/images/favicon/flat-design-touch.png">
-<script src="${{pageContext.request.contextPath}}/js/jquery.min.js"></script>
+	href="/images/favicon/flat-design-touch.png">
+<script src="/js/jquery.min.js"></script>
 </head>
 <body>
 	<div id="wrap">
@@ -21,13 +18,13 @@
 		<div th:if="${user == null}">
 			<section class="info_section">
 				<ul class="info_list">
-					<li><a href="/mainPage"><img
+					<li><a href="/MainPage"><img
 							src="/images/s_images/free-icon-font-bell-3917226.png"
 							style="width: 30px;" alt="">메인홈</a></li>
-					<li><a href="/login"><img
+					<li><a href="/Login"><img
 							src="/images/s_images/free-icon-font-id-badge-3914510.png"
 							style="width: 30px;" alt="">내정보</a></li>
-					<li><a href="/login"><img
+					<li><a href="/Login"><img
 							src="/images/s_images/free-icon-font-comments-5074600.png"
 							style="width: 30px;" alt="">로그인</a></li>
 				</ul>
@@ -35,7 +32,7 @@
 
 			<header class="header">
 				<h1 class="logo">
-					<a href="/mainPage"><img src="/images/s_images/마크.png"
+					<a href="/MainPage"><img src="/images/s_images/마크.png"
 						style="width: 98px;" alt=""> <span id="logo_1">강남대학교</span>
 						중고장터</a>
 				</h1>
@@ -45,10 +42,10 @@
 				<div class="signup">
 					<h2>로그인 후 이용가능 합니다.</h2>
 					<div>
-						<button class="loginbtn" onclick="location.href='/login'">로그인</button>
+						<button class="loginbtn" onclick="location.href='/Login'">로그인</button>
 					</div>
 					<div>
-						<button class="loginbtn" onclick="location.href='/signUp'">회원가입</button>
+						<button class="loginbtn" onclick="location.href='/SignUp'">회원가입</button>
 					</div>
 				</div>
 			</section>
@@ -61,10 +58,10 @@
 					<li><a href="/jjimBbs"><img
 							src="/images/s_images/free-icon-font-bell-3917226.png"
 							style="width: 30px;" alt="">찜목록</a></li>
-					<li><a href="/myPage"><img
+					<li><a href="/MyPage"><img
 							src="/images/s_images/free-icon-font-id-badge-3914510.png"
 							style="width: 30px;" alt="">내정보</a></li>
-					<li><a href="/logout"><img
+					<li><a href="/Logout"><img
 							src="/images/s_images/free-icon-font-comments-5074600.png"
 							style="width: 30px;" alt="">로그아웃</a></li>
 				</ul>
@@ -72,7 +69,7 @@
 
 			<header class="header">
 				<h1 class="logo">
-					<a href="/mainPage"><img src="/images/s_images/마크.png"
+					<a href="/MainPage"><img src="/images/s_images/마크.png"
 						style="width: 98px;" alt=""> <span id="logo_1">강남대학교</span>
 						중고장터</a>
 				</h1>
@@ -81,7 +78,7 @@
 			<section class="my_section">
 				<div class="my_info">
 					<h1>내 정보</h1>
-					<a href="/logout" class="logout">로그아웃</a>
+					<a href="/Logout" class="logout">로그아웃</a>
 				</div>
 				<div class="my_profile">
 					<img src="/images/s_images/user-line.png">
@@ -92,8 +89,8 @@
 
 			<section class="my_section_1">
 				<h2>계정</h2>
-				<a href="/mailCheck" class="item">이메일 인증</a> <a
-					href="/changePassword" class="item">비밀번호 변경</a>
+				<a href="/MailCheck" class="item">이메일 인증</a> <a
+					href="/ChangePassword" class="item">비밀번호 변경</a>
 			</section>
 
 			<section class="chat_rooms_section">

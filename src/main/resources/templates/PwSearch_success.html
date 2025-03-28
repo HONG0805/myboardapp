@@ -5,27 +5,24 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>아이디/비밀번호 찾기</title>
+<link rel="stylesheet" type="text/css" href="@{/CSS/reset.css}">
 <link rel="stylesheet" type="text/css"
-	href="${{pageContext.request.contextPath}}/CSS/reset.css">
-<link rel="stylesheet" type="text/css"
-	href="${{pageContext.request.contextPath}}/CSS/PwSearch_success.css">
-<link rel="shortcut icon"
-	href="${{pageContext.request.contextPath}}/images/favicon/favicon.ico">
+	href="@{/CSS/PwSearch_success.css}">
+<link rel="shortcut icon" href="@{/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	href="${{pageContext.request.contextPath}}/images/favicon/flat-design-touch.png">
-<script src="${{pageContext.request.contextPath}}/js/jquery.min.js"></script>
+	href="@{/images/favicon/flat-design-touch.png}">
+<script src="@{/js/jquery.min.js}"></script>
 </head>
 
 <body>
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a href="{{contextPath}}/view/pages/Login.jsp">Kangnam
-					University</a>
+				<a href="@{/Login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a href="{{contextPath}}/view/pages/Login.jsp">중고장터</a>
+					<a href="@{/Login}">중고장터</a>
 				</h3>
 			</div>
 		</header>
@@ -35,10 +32,9 @@
 				<h2>비밀번호 결과</h2>
 				<div class="IDresult">회원님의 비밀번호를 변경하셔야 합니다.</div>
 				<div class="btn_IDsearch">
-					<form method="POST"
-						action="{{contextPath}}/view/pages/ChangePW_1.jsp">
-						<input type="hidden" name="userID" value="{{userID}}"> <input
-							type="hidden" name="userPW" value="{{userPW}}"> <input
+					<form method="POST" action="@{/ChangePW_1}">
+						<input type="hidden" name="userID" value="${userID}"> <input
+							type="hidden" name="userPW" value="${userPW}"> <input
 							type="submit" id="btnChangePw" class="loginbtn" value="비밀번호 변경" />
 					</form>
 				</div>

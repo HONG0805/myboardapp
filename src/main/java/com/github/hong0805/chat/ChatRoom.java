@@ -1,39 +1,59 @@
 package com.github.hong0805.chat;
 
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Table(name = "chat_rooms")
 public class ChatRoom {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id") 
-	private Long id; 
+	private int roomID;
 
-	@Column(name = "bbs_id", nullable = false)
-	private Long bbsId;
+	private int bbsID;
 
-	@Column(name = "user1_id", nullable = false)
-	private String user1Id;
+	private String user1ID;
 
-	@Column(name = "user2_id", nullable = false)
-	private String user2Id;
+	private String user2ID;
 
-	@CreatedDate
-	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt;
+	private String partnerID;
+
+	public int getRoomID() {
+		return roomID;
+	}
+
+	public void setRoomID(int roomID) {
+		this.roomID = roomID;
+	}
+
+	public int getBbsID() {
+		return bbsID;
+	}
+
+	public void setBbsID(int bbsID) {
+		this.bbsID = bbsID;
+	}
+
+	public String getUser1ID() {
+		return user1ID;
+	}
+
+	public void setUser1ID(String user1ID) {
+		this.user1ID = user1ID;
+	}
+
+	public String getUser2ID() {
+		return user2ID;
+	}
+
+	public void setUser2ID(String user2ID) {
+		this.user2ID = user2ID;
+	}
+
+	public String getPartnerID() {
+		return partnerID;
+	}
+
+	public void setPartnerID(String partnerID) {
+		this.partnerID = partnerID;
+	}
 }

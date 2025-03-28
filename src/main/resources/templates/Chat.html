@@ -1,32 +1,30 @@
-<html xmlns:th="http://www.thymeleaf.org"> 
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>강남대학교 중고장터</title>
 <link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/CSS/reset.css?v=2.0">
+	th:href="@{/static/CSS/reset.css?v=2.0}">
 <link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/CSS/Chat.css?v=1.1" />
+	th:href="@{/static/CSS/Chat.css?v=1.1}">
 <link rel="shortcut icon"
-	href="${pageContext.request.contextPath}/images/favicon/favicon.ico">
+	th:href="@{/static/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	href="${pageContext.request.contextPath}/images/favicon/flat-design-touch.png">
+	th:href="@{/static/images/favicon/flat-design-touch.png}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
 	var websocket;
 	var line = 0;
-	var userID = "${sessionScope.userID}";
-	var roomId = $
-	{
-		roomId
-	};
+	var userID = /*[[${session.userID}]]*/""; // Thymeleaf 변수로 사용자 ID를 가져오기
+	var roomId = /*[[${roomId}]]*/0; // roomId 값도 Thymeleaf 변수로 가져오기
 
 	if (userID === "") {
 		alert("로그인 후 이용 가능합니다.");
-		window.location.href = "${pageContext.request.contextPath}/view/pages/Login.jsp";
+		window.location.href = '/login';  <!-- 로그인 페이지로 이동 -->
 	} else {
-		websocket = new WebSocket("ws://localhost:8080/kangnamM/Chat/" + roomId
+		websocket = new WebSocket("ws://localhost:8080/Chat/" + roomId
 				+ "?userID=" + userID);
 	}
 
@@ -56,10 +54,8 @@
 		var cssClass;
 		if (senderID === userID) {
 			cssClass = "my-message";
-		} else if (senderID === ownerID) {
-			cssClass = "owner-message";
 		} else {
-			cssClass = "other-message";
+			cssClass = "other-message"; // 변경: ownerID 조건을 제거하고 기본 처리
 		}
 
 		var messageDiv = document.createElement("div");
@@ -76,7 +72,7 @@
 			var msg = escapeHtml(document.getElementById("send").value);
 
 			$.ajax({
-				url : '${pageContext.request.contextPath}/chat/sendMessage',
+				url : '/chat/sendMessage',
 				type : 'POST',
 				data : {
 					roomId : roomId,
@@ -102,7 +98,7 @@
 			const escape = {
 				'&' : '&amp;',
 				'<': '&lt;',
-                    '>' : '&gt;',
+                '>' : '&gt;',
 				'"' : '&quot;',
 				"'" : '&#039;'
 			};
@@ -112,31 +108,27 @@
 </script>
 </head>
 <body>
-	<c:choose>
-		<c:when test="${empty userID}">
+	<div th:switch="${empty userID}">
+		<div th:case="true">
+			<!-- 로그인하지 않은 경우 -->
 			<div id="wrap">
 				<section class="info_section">
 					<ul class="info_list">
-						<li><a
-							href="${pageContext.request.contextPath}/view/pages/MainPage.jsp"><img
-								src="${pageContext.request.contextPath}/images/s_images/free-icon-font-bell-3917226.png"
+						<li><a th:href="@{/main}"><img
+								th:src="@{/static/images/s_images/free-icon-font-bell-3917226.png}"
 								style="width: 30px; height: auto;" alt="">메인홈</a></li>
-						<li><a
-							href="${pageContext.request.contextPath}/view/pages/Login.jsp"><img
-								src="${pageContext.request.contextPath}/images/s_images/free-icon-font-id-badge-3914510.png"
+						<li><a th:href="@{/login}"><img
+								th:src="@{/static/images/s_images/free-icon-font-id-badge-3914510.png}"
 								style="width: 30px; height: auto;" alt="">내정보</a></li>
-						<li><a
-							href="${pageContext.request.contextPath}/view/pages/Login.jsp"><img
-								src="${pageContext.request.contextPath}/images/s_images/free-icon-font-comments-5074600.png"
+						<li><a th:href="@{/login}"><img
+								th:src="@{/static/images/s_images/free-icon-font-comments-5074600.png}"
 								style="width: 30px; height: auto;" alt="">로그인</a></li>
 					</ul>
 				</section>
 				<header class="header">
 					<h1 class="logo">
-						<a
-							href="${pageContext.request.contextPath}/view/pages/MainPage.jsp">
-							<img
-							src="${pageContext.request.contextPath}/images/s_images/마크.png"
+						<a th:href="@{/main}"> <img
+							th:src="@{/static/images/s_images/마크.png}"
 							style="width: 98px; height: auto;" alt=""> <span
 							id="logo_1">강남대학교</span> 중고장터
 						</a>
@@ -147,41 +139,36 @@
 						<h2>로그인 후 이용가능 합니다.</h2>
 						<div>
 							<input type="button" id="btnPwSearch" class="loginbtn"
-								value="로그인"
-								onclick="location.href='${pageContext.request.contextPath}/view/pages/Login.jsp'" />
+								value="로그인" th:onclick="|location.href='@{/login}'|" />
 						</div>
 						<div>
 							<input type="button" id="btnSignUp" class="loginbtn" value="회원가입"
-								onclick="location.href='${pageContext.request.contextPath}/view/pages/SignUp.jsp'" />
+								th:onclick="|location.href='@{/signup}'|" />
 						</div>
 					</div>
 				</section>
 			</div>
-		</c:when>
-		<c:otherwise>
+		</div>
+		<div th:case="false">
+			<!-- 로그인한 경우 -->
 			<div id="wrap">
 				<section class="info_section">
 					<ul class="info_list">
-						<li><a
-							href="${pageContext.request.contextPath}/view/pages/jjimBbs.jsp"><img
-								src="${pageContext.request.contextPath}/images/s_images/free-icon-font-bell-3917226.png"
+						<li><a th:href="@{/jjimBbs}"><img
+								th:src="@{/static/images/s_images/free-icon-font-bell-3917226.png}"
 								style="width: 30px; height: auto;" alt="">찜목록</a></li>
-						<li><a
-							href="${pageContext.request.contextPath}/view/pages/MyPage.jsp"><img
-								src="${pageContext.request.contextPath}/images/s_images/free-icon-font-id-badge-3914510.png"
+						<li><a th:href="@{/mypage}"><img
+								th:src="@{/static/images/s_images/free-icon-font-id-badge-3914510.png}"
 								style="width: 30px; height: auto;" alt="">내정보</a></li>
-						<li><a
-							href="${pageContext.request.contextPath}/view/pages/Logout.jsp"><img
-								src="${pageContext.request.contextPath}/images/s_images/free-icon-font-comments-5074600.png"
+						<li><a th:href="@{/logout}"><img
+								th:src="@{/static/images/s_images/free-icon-font-comments-5074600.png}"
 								style="width: 30px; height: auto;" alt="">로그아웃</a></li>
 					</ul>
 				</section>
 				<header class="header">
 					<h1 class="logo">
-						<a
-							href="${pageContext.request.contextPath}/view/pages/MainPage.jsp">
-							<img
-							src="${pageContext.request.contextPath}/images/s_images/마크.png"
+						<a th:href="@{/main}"> <img
+							th:src="@{/static/images/s_images/마크.png}"
 							style="width: 98px; height: auto;" alt=""> <span
 							id="logo_1">강남대학교</span> 중고장터
 						</a>
@@ -191,18 +178,19 @@
 				<section class="chat_section">
 					<h2>채팅</h2>
 					<div id="chat" class="chat_container">
-						<c:forEach var="messageInfo" items="${messages}">
-							<c:set var="messageParts" value="${fn:split(messageInfo, '|')}" />
-							<c:set var="chatMessage" value="${messageParts[0]}" />
-							<c:set var="cssClass" value="${messageParts[1]}" />
-							<c:set var="senderID"
-								value="${fn:substringBefore(chatMessage, ' ')}" />
-							<c:set var="chatText"
-								value="${fn:substringAfter(chatMessage, ' ')}" />
-							<div class="${cssClass}">
-								<strong>${senderID}</strong>${chatText}
+						<div th:each="messageInfo : ${messages}">
+							<div
+								th:with="messageParts=${#strings.split(messageInfo, '|')}, 
+                                       chatMessage=${messageParts[0]}, 
+                                       cssClass=${messageParts[1]},
+                                       senderID=${#strings.substringBefore(chatMessage, ' ')}, 
+                                       chatText=${#strings.substringAfter(chatMessage, ' ')}">
+								<div th:class="${cssClass}">
+									<strong th:text="${senderID}"></strong> <span
+										th:text="${chatText}"></span>
+								</div>
 							</div>
-						</c:forEach>
+						</div>
 					</div>
 				</section>
 
@@ -214,7 +202,7 @@
 					</div>
 				</section>
 			</div>
-		</c:otherwise>
-	</c:choose>
+		</div>
+	</div>
 </body>
 </html>

@@ -1,48 +1,43 @@
 package com.github.hong0805.chat;
 
-import com.github.hong0805.chat.ChatService;
-import com.github.hong0805.chat.dto.request.*;
-import com.github.hong0805.chat.dto.response.*;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/chat")
-@RequiredArgsConstructor
 public class ChatController {
 
-	private final ChatService chatService;
+	@Autowired
+	private ChatService chatService;
 
-	@PostMapping("/rooms")
-	public ResponseEntity<ChatRoomResponse> createRoom(@RequestBody @Valid ChatRoomCreateRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(chatService.createOrGetChatRoom(request));
+	// 채팅방 생성 (게시물 ID와 사용자 ID를 받아서 채팅방 생성)
+	@PostMapping("/create")
+	public ResponseEntity<Integer> createChatRoom(@RequestParam int bbsID, @RequestParam String userID) {
+		int roomID = chatService.createChatRoom(bbsID, userID);
+		if (roomID == -1) {
+			return ResponseEntity.status(400).body(-1); // 오류 발생 시 -1 반환
+		}
+		return ResponseEntity.ok(roomID);
 	}
 
-	@PostMapping("/messages")
-	public ResponseEntity<MessageResponse> sendMessage(@RequestBody @Valid MessageSendRequest request) {
-		return ResponseEntity.ok(chatService.sendMessage(request));
+	// 채팅방 메시지 조회 (채팅방 ID를 받아서 해당 메시지 리스트 반환)
+	@GetMapping("/messages/{roomID}")
+	public ResponseEntity<List<String>> getMessages(@PathVariable int roomID) {
+		List<Message> messages = chatService.getMessages(roomID);
+		List<String> formattedMessages = messages.stream().map(msg -> msg.getUserID() + " : " + msg.getMessage())
+				.collect(Collectors.toList()); // 여기서 toList() 대신 Collectors.toList() 사용
+		return ResponseEntity.ok(formattedMessages);
 	}
 
-	@GetMapping("/rooms/{roomId}/messages")
-	public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable Long roomId,
-			@RequestParam String currentUserId) {
-		return ResponseEntity.ok(chatService.getMessages(roomId, currentUserId));
-	}
-
-	@GetMapping("/users/{userId}/rooms")
-	public ResponseEntity<List<RoomListResponse>> getUserRooms(@PathVariable String userId) {
-		return ResponseEntity.ok(chatService.getUserChatRooms(userId));
-	}
-
-	@GetMapping("/rooms/{roomId}/bbs")
-	public ResponseEntity<Long> getBbsIdByRoomId(@PathVariable Long roomId) {
-		return ResponseEntity.ok(chatService.getBbsIdByRoomId(roomId));
+	// 메시지 전송 (채팅방 ID, 사용자 ID, 메시지를 받아서 전송)
+	@PostMapping("/send")
+	public ResponseEntity<String> sendMessage(@RequestParam int roomID, @RequestParam String userID,
+			@RequestParam String message) {
+		String timestamp = chatService.sendMessage(roomID, userID, message);
+		return ResponseEntity.ok(timestamp);
 	}
 }

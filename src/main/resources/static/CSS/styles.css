@@ -1,0 +1,107 @@
+/* 기본 CSS */
+#wrap {
+	display: flex;
+	flex-flow: column nowrap;
+	width: 80%;
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
+#wrap section {
+	box-sizing: border-box;
+}
+
+.info_section {
+	order: 1;
+	width: 100%;
+	background: white;
+	border-bottom: 1px solid black;
+}
+
+.info_list {
+	display: flex;
+}
+
+.info_list li {
+	width: 33.33%;
+	text-align: center;
+	font-weight: bold;
+}
+
+.info_list li a {
+	display: block;
+	padding: 15px 0;
+	padding: 0.938rem 0;
+	cursor: pointer;
+}
+
+.info_list img {
+	vertical-align: middle;
+	margin: 2px;
+}
+
+/* 모바일용 CSS */
+@media all and (max-width: 767px) {
+	.header {
+		flex-direction: column;
+		height: auto;
+	}
+	#wrap {
+		width: 90%;
+	}
+}
+
+/* 태블릿용 CSS */
+@media all and (min-width:768px) {
+	.header {
+		flex-direction: row;
+		height: 180px;
+	}
+	#wrap {
+		flex-flow: row wrap;
+	}
+}
+
+/* PC용 CSS */
+@media all and (min-width:1200px) {
+	#wrap {
+		position: relative;
+		width: 50%;
+	}
+	.info_section {
+		order: 0;
+		position: absolute;
+		top: 70px;
+		top: 4.375rem;
+		right: 30px;
+		right: 1.875rem;
+		z-index: 30;
+		width: auto;
+		border-bottom: 0;
+	}
+	.info_list li {
+		width: auto;
+		margin-left: 30px;
+		margin-left: 1.25rem;
+		font-weight: bold;
+	}
+	.info_list li a {
+		padding: 0;
+	}
+	.header {
+		order: 1;
+		justify-content: flex-end;
+		position: static;
+		height: 200px;
+	}
+	.logo {
+		float: left;
+		width: 70%;
+	}
+	.logo a {
+		font-size: 30px;
+		padding: 50px 0;
+		padding: 3.125rem 0;
+		justify-content: flex-start;
+	}
+}

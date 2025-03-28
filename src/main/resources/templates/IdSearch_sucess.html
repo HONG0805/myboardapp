@@ -1,28 +1,30 @@
 <!DOCTYPE HTML>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>아이디/비밀번호 찾기</title>
-<link rel="stylesheet" type="text/css" th:href="@{/CSS/reset.css}">
 <link rel="stylesheet" type="text/css"
-	th:href="@{/CSS/IdSearch_success.css}">
-<link rel="shortcut icon" th:href="@{/images/favicon/favicon.ico}">
+	th:href="@{/static/CSS/reset.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/static/CSS/IdSearch_success.css}">
+<link rel="shortcut icon"
+	th:href="@{/static/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	th:href="@{/images/favicon/flat-design-touch.png}">
-<script th:src="@{/js/jquery.min.js}"></script>
+	th:href="@{/static/images/favicon/flat-design-touch.png}">
+<script th:src="@{/static/js/jquery.min.js}"></script>
 </head>
 
 <body>
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a th:href="@{/view/pages/Login.jsp}">Kangnam University</a>
+				<a th:href="@{/}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a th:href="@{/view/pages/Login.jsp}">중고장터</a>
+					<a th:href="@{/}">중고장터</a>
 				</h3>
 			</div>
 		</header>
@@ -40,15 +42,15 @@
 
 				<div class="btn_IDsearch">
 					<input type="button" id="btnLogin" class="loginbtn" value="로그인"
-						th:onclick="'location.href=\'@{/view/pages/Login.jsp}\''" /> <input
-						type="button" id="btnLogin" class="loginbtn" value="비밀번호찾기"
-						th:onclick="'location.href=\'@{/view/pages/PwSearch.jsp}\''" /> <input
+						th:onclick="'location.href=\'@{/login}\'" /> <input type="button"
+						id="btnLogin" class="loginbtn" value="비밀번호찾기"
+						th:onclick="'location.href=\'@{/pw-search}\'" /> <input
 						th:if="${userID == null}" type="button" id="btnLogin"
 						class="loginbtn" value="다시찾기"
-						th:onclick="'location.href=\'@{/view/pages/IdSearch.jsp}\''" /> <input
+						th:onclick="'location.href=\'@{/id-search}\'" /> <input
 						th:if="${userID == null}" type="button" id="btnLogin"
 						class="loginbtn" value="회원가입"
-						th:onclick="'location.href=\'@{/view/pages/SignUp.jsp}\''" />
+						th:onclick="'location.href=\'@{/signup}\'" />
 				</div>
 			</div>
 		</section>

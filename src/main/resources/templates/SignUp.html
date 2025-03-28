@@ -1,21 +1,20 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"> 
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>강남대학교 중고장터 회원가입</title>
-<link rel="stylesheet" type="text/css" href="/CSS/reset.css">
-<link rel="stylesheet" type="text/css" href="/CSS/SignUp.css?v=1.0">
-<link rel="shortcut icon" href="/images/favicon/favicon.ico">
+<link rel="stylesheet" type="text/css" href="@{/CSS/reset.css}">
+<link rel="stylesheet" type="text/css" href="@{/CSS/SignUp.css?v=1.0}">
+<link rel="shortcut icon" href="@{/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	href="/images/favicon/flat-design-touch.png">
+	href="@{/images/favicon/flat-design-touch.png}">
 <script src="https://kit.fontawesome.com/e1bd1cb2a5.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-<script src="/js/script.js"></script>
-<script src="/js/jquery.min.js"></script>
-<script type="text/javascript" src="/js/validation.js"></script>
-<!-- 별도의 JS 파일로 유효성 검사 분리 -->
+<script src="@{/js/script.js}"></script>
+<script src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" src="@{/js/validation.js}"></script>
 
 <script type="text/javascript">
 	function validate() {
@@ -69,11 +68,11 @@
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a href="/login">Kangnam University</a>
+				<a href="@{/login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a href="/login">중고장터</a>
+					<a href="@{/login}">중고장터</a>
 				</h3>
 			</div>
 		</header>

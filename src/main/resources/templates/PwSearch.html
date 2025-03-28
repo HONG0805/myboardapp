@@ -5,15 +5,12 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>아이디/비밀번호 찾기</title>
-<link rel="stylesheet" type="text/css"
-	href="${{pageContext.request.contextPath}}/CSS/reset.css">
-<link rel="stylesheet" type="text/css"
-	href="${{pageContext.request.contextPath}}/CSS/PwSearch.css">
-<link rel="shortcut icon"
-	href="${{pageContext.request.contextPath}}/images/favicon/favicon.ico">
+<link rel="stylesheet" type="text/css" href="@{/CSS/reset.css}">
+<link rel="stylesheet" type="text/css" href="@{/CSS/PwSearch.css}">
+<link rel="shortcut icon" href="@{/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	href="${{pageContext.request.contextPath}}/images/favicon/flat-design-touch.png">
-<script src="${{pageContext.request.contextPath}}/js/jquery.min.js"></script>
+	href="@{/images/favicon/flat-design-touch.png}">
+<script src="@{/js/jquery.min.js}"></script>
 
 <script type="text/javascript">
         window.addEventListener('keyup', () => {
@@ -43,7 +40,7 @@
     }
     
     frm.method = "post";
-    frm.action = "${pageContext.request.contextPath}/view/pages/PwSearch_success.jsp";
+    frm.action = "@{/pwSearchSuccess}";
     frm.submit();
 }
 </script>
@@ -53,18 +50,17 @@
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a href="${{pageContext.request.contextPath}}/view/pages/Login.jsp">Kangnam
-					University</a>
+				<a href="@{/Login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a href="${{pageContext.request.contextPath}}/view/pages/Login.jsp">중고장터</a>
+					<a href="@{/Login}">중고장터</a>
 				</h3>
 			</div>
 		</header>
 
 		<section class="sign_section">
-			<form action="{{contextPath}}/pwSearch" method="POST">
+			<form action="@{/pwSearch}" method="POST">
 				<div class="signup">
 					<h2>비밀번호 찾기</h2>
 					<div class="text">이름</div>

@@ -1,0 +1,387 @@
+/* 기본 레이아웃 */
+#wrap {
+	width: 80%;
+	max-width: 1200px; /* 페이지의 최대 너비 제한 */
+	margin: 0 auto;
+}
+
+#wrap section {
+	box-sizing: border-box;
+}
+
+.info_section {
+	order: 1;
+	width: 100%;
+	background: white;
+	border-bottom: 1px solid black;
+}
+
+.info_list {
+	display: flex;
+}
+
+.info_list li {
+	width: 33.33%;
+	text-align: center;
+	font-weight: bold;
+}
+
+.info_list li a {
+	display: block;
+	padding: 15px 0;
+	padding: 0.938rem 0;
+	cursor: pointer;
+}
+
+.info_list img {
+	vertical-align: middle;
+	margin: 2px;
+}
+
+.header {
+	display: flex;
+	order: 2;
+	flex-direction: column;
+	position: relative;
+	width: 100%;
+}
+
+.logo {
+	order: 1;
+	width: 100%;
+	padding: 30px 0;
+	padding: 1.875rem 0;
+	font-size: 1.188rem;
+	line-height: 21px;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.logo img {
+	vertical-align: middle;
+}
+
+.logo a {
+	font-size: 20px;
+}
+
+#logo_1 {
+	color: #4f94e4;
+}
+
+.content_categories {
+	width: 100%;
+	order: 3;
+	padding: 10px;
+	padding: 0.625rem;
+}
+
+.content_search {
+	width: 100%;
+	order: 4;
+	padding: 10px;
+	padding: 0.625rem;
+}
+
+.content_row_1>div.category_selected {
+	padding: 10px;
+	cursor: pointer;
+	display: inline-block;
+}
+
+.content_row_1>div.category {
+	padding: 10px;
+	cursor: pointer;
+	display: inline-block;
+}
+
+.content_row_2 {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	width: 100%;
+}
+
+.search {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 10px;
+	border: 2px solid #1289dd;
+	border-radius: 10px;
+	background: transparent url(/images/s_images/search-line.png) no-repeat
+		right 10px center;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.search_check {
+	background-color: #4f94e4b3;
+	margin-left: 10px;
+}
+
+.content_row_2>form.search>input.text {
+	flex-grow: 1;
+	height: 30px;
+	border: 0;
+	width: calc(100% - 40px); /* 여백을 제외한 너비 설정 */
+	color: #292929;
+	font-size: 14px;
+	background-color: transparent;
+	outline: none;
+}
+
+.content_section {
+	order: 5;
+	width: 100%;
+	padding: 10px;
+	padding: 0.625rem;
+}
+
+.comment {
+	padding: 5px;
+}
+
+.bbstitle {
+	width: 60%;
+	margin: 15px 0px 15px 10px;
+	font-weight: bold;
+	font-size: 20px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bbscontent {
+	width: 60%;
+	margin: 15px 0px 15px 10px;
+	color: gray;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bbsdate {
+	width: 100%;
+	font-size: 12px;
+	margin: 10px;
+}
+
+#writeArticleButton {
+	display: block;
+	border: 2px solid #d6d6d6;
+	color: #a6a6a6;
+	box-sizing: border-box;
+	cursor: text;
+	height: 50px;
+	padding: 10px;
+	font-size: 18px;
+	margin-top: 20px; /* 위쪽에 공간을 추가해서 정렬 */
+	font-weight: bold;
+	line-height: 26px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.writeimg {
+	float: right;
+	filter: opacity(0.5) drop-shadow(0 0 0 #d6d6d6);
+}
+
+div.content_article>article {
+	margin-bottom: -1px;
+	box-sizing: border-box;
+	border: 1px solid #e3e3e3;
+	background-color: white;
+}
+
+div.content_article>article>a.article {
+	display: block;
+	padding: 15px;
+	padding: 0.9375rem;
+	cursor: pointer;
+}
+
+.pagination_footer {
+	order: 6;
+	width: 100%;
+	margin-bottom: 100px;
+	box-sizing: border-box;
+}
+
+div.pagination>a.prev {
+	float: left;
+	padding: 10px;
+	margin-left: 20px;
+	border: 2px solid #1289dd;
+	font-size: 14px;
+	border-radius: 15px;
+	cursor: pointer;
+}
+
+div.pagination>a.next {
+	float: right;
+	padding: 10px;
+	margin-right: 20px;
+	border: 2px solid #1289dd;
+	font-size: 14px;
+	border-radius: 15px;
+	cursor: pointer;
+}
+
+div.pagination>img {
+	vertical-align: middle;
+}
+
+.sign_section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	order: 2;
+	padding: 30px;
+	width: 100%;
+	align-items: center;
+}
+
+.signup {
+	border: 1px solid #1289dd;
+	border-radius: 10px;
+	padding: 20px;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+.loginbtn {
+	width: 100%;
+	max-width: 1000px;
+	color: white;
+	padding: 15px;
+	border-radius: 5px;
+	margin: 20px 0;
+	font-weight: bold;
+	text-align: center;
+	background-color: rgba(0, 147, 245);
+	font-size: 16px;
+	box-sizing: border-box;
+}
+
+/* 테블릿 CSS */
+@media all and (min-width: 768px) {
+	.header {
+		flex-direction: row;
+		height: 180px;
+	}
+	.logo {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		width: 100%;
+		padding: 0;
+		text-align: center;
+	}
+	.logo a {
+		display: flex;
+		align-items: center;
+		padding: 50px;
+		font-size: 40px;
+		justify-content: center;
+	}
+	.content_categories {
+		padding: 10px;
+	}
+	.content_row_1>div.category_selected {
+		padding: 10px;
+		cursor: pointer;
+		display: inline-block;
+	}
+	.content_row_1>div.category {
+		padding: 10px;
+		cursor: pointer;
+		display: inline-block;
+	}
+	.content_search {
+		padding: 10px;
+	}
+	#wrap {
+		flex-flow: row wrap;
+	}
+}
+
+/* PC CSS */
+@media all and (min-width: 1400px) {
+	#wrap {
+		position: relative;
+		width: 50%;
+	}
+	.info_section {
+		order: 0;
+		position: absolute;
+		top: 70px;
+		top: 4.375rem;
+		right: 30px;
+		right: 1.875rem;
+		z-index: 30;
+		width: auto;
+		border-bottom: 0;
+	}
+	.info_list li {
+		width: auto;
+		margin-left: 30px;
+		margin-left: 1.25rem;
+		font-weight: bold;
+	}
+	.info_list li a {
+		padding: 0;
+	}
+	.info_list a {
+		align-items: center;
+	}
+	.info_list img {
+		vertical-align: middle;
+		margin: 2px;
+	}
+	.header {
+		order: 1;
+		justify-content: flex-end;
+		position: static;
+		height: 200px;
+	}
+	.logo {
+		float: left;
+		width: 70%;
+	}
+	.logo a {
+		font-size: 30px;
+		padding: 50px 0;
+		padding: 3.125rem 0;
+		justify-content: flex-start
+	}
+	#logo_1 {
+		color: #4f94e4;
+	}
+	.logo img {
+		vertical-align: middle;
+	}
+	.content_categories {
+		width: 40%;
+		padding: 20px;
+	}
+	.content_search {
+		width: 100%;
+		padding: 20px;
+	}
+	.content_row_2>form.search {
+		width: 100%;
+		float: right;
+		border: 2px solid #1289dd;
+	}
+	.content_section {
+		order: 5;
+		width: 100%;
+		padding: 20px;
+	}
+}

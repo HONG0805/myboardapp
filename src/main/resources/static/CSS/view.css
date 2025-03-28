@@ -1,0 +1,341 @@
+/* 모바일용 CSS */
+/* 기본 CSS */
+#wrap {
+	display: flex;
+	flex-flow: column nowrap;
+	width: 80%;
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
+#wrap section {
+	box-sizing: border-box;
+}
+
+.info_section {
+	order: 1;
+	width: 100%;
+	background: white;
+	border-bottom: 1px solid black;
+}
+
+.info_list {
+	display: flex;
+}
+
+.info_list li {
+	width: 33.33%;
+	text-align: center;
+	font-weight: bold;
+}
+
+.info_list li a {
+	display: block;
+	padding: 15px 0;
+	padding: 0.938rem 0;
+	cursor: pointer;
+}
+
+.info_list img {
+	vertical-align: middle;
+	margin: 2px;
+}
+
+.header {
+	display: flex;
+	order: 2;
+	flex-direction: column;
+	position: relative;
+	width: 100%;
+}
+
+.logo {
+	order: 1;
+	width: 100%;
+	padding: 30px 0;
+	padding: 1.875rem 0;
+	font-size: 1.188rem;
+	font-size: 1.188rem;
+	line-height: 21px;
+	line-height: 1.313rem;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.logo a {
+	font-size: 20px;
+}
+
+#logo_1 {
+	color: #4f94e4;
+}
+
+.logo img {
+	vertical-align: middle;
+}
+
+p {
+	margin: 10px;
+	overflow: hidden;
+	word-wrap: break-word;
+}
+
+.sign_section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	order: 2;
+	padding: 30px;
+	width: 100%;
+	align-items: center;
+}
+
+.signup {
+	border: 1px solid #1289dd;
+	border-radius: 10px;
+	padding: 20px;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+.loginbtn {
+	width: 100%;
+	max-width: 1000px;
+	color: white;
+	padding: 15px;
+	border-radius: 5px;
+	margin: 20px 0;
+	font-weight: bold;
+	text-align: center;
+	background-color: rgba(0, 147, 245);
+	font-size: 16px;
+	box-sizing: border-box;
+}
+
+.board_section {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	order: 2;
+}
+
+.board_section_1 {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	order: 4;
+}
+
+.btn_div {
+	width: 400px;
+}
+
+.category_div {
+	margin-top: 20px;
+	padding: 20px;
+	border-radius: 5px;
+	border: 2px solid #4f94e4;
+	width: 400px;
+	max-width: 1000px;
+}
+
+.btn_primary {
+	float: left;
+	margin: 5px;
+	padding: 10px;
+	border-radius: 5px;
+	border: 2px solid black;
+	background: #d6d6d6;
+	color: white;
+	font-weight: bold;
+}
+
+.back_list {
+	float: right;
+	margin: 5px;
+	padding: 10px;
+	border-radius: 5px;
+	border: 2px solid black;
+	background: #d6d6d6;
+	color: white;
+	font-weight: bold;
+	padding: 10px;
+}
+
+.reply_section {
+	order: 3;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+.reply_section_1 {
+	order: 4;
+	width: 100%;
+	margin-bottom: 50px;
+	display: flex;
+	justify-content: center;
+}
+
+.reply_title {
+	background-color: #4f94e4;
+	border-radius: 5px;
+	text-align: center;
+	padding: 10px;
+	width: 400px;
+	max-width: 1000px;
+	color: white;
+}
+
+.table-striped {
+	text-align: center;
+	margin-top: 10px;
+}
+
+.textarea_css {
+	float: left;
+	border: 1px solid #4f94e4;
+	border-radius: 5px;
+	padding: 12px 30px;
+	transition: background 0.3s ease;
+	font-size: 1rem;
+	resize: none;
+}
+
+.reply_btn {
+	padding: 18px 18px;
+	font-size: 1rem;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+	float: right;
+}
+
+.reply_tr td {
+	border: 1px solid #4f94e4;
+	border-radius: 5px;
+	padding: 10px;
+	text-overflow: ellipsis;
+	vertical-align: middle;
+}
+
+.reply_td_font {
+	font-size: 11px;
+}
+
+.jjimbtn {
+	margin: 5px;
+	font-weight: bold;
+	background-color: #fffe00;
+	border: 2px solid #f9de2e;
+	border-radius: 10px;
+	color: black;
+}
+
+.chatbtn {
+	margin: 5px;
+	font-weight: bold;
+	background-color: #4f94e4;
+	border: 2px solid #4f94e4;
+	border-radius: 10px;
+	color: white;
+}
+
+.chatbtn:hover {
+	background-color: #3578c2;
+	border-color: #3578c2;
+}
+
+
+/* 태블릿용 CSS */
+@media all and (min-width:768px) {
+	.header {
+		flex-direction: row;
+		height: 180px;
+	}
+	.logo {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		width: 100%;
+		padding: 0;
+		text-align: center;
+		left: 0;
+	}
+	.logo a {
+		display: flex;
+		align-items: center;
+		padding: 50px;
+		padding: 3.125rem;
+		font-size: 40px;
+		justify-content: center;
+	}
+	#wrap {
+		flex-flow: row wrap;
+	}
+}
+
+/* PC용 CSS */
+@media all and (min-width:1400px) {
+	/* 기본 CSS */
+	#wrap {
+		position: relative;
+		width: 50%;
+	}
+	.info_section {
+		order: 0;
+		position: absolute;
+		top: 70px;
+		top: 4.375rem;
+		right: 30px;
+		right: 1.875rem;
+		z-index: 30;
+		width: auto;
+		border-bottom: 0;
+	}
+	.info_list li {
+		width: auto;
+		margin-left: 30px;
+		margin-left: 1.25rem;
+		font-weight: bold;
+	}
+	.info_list li a {
+		padding: 0;
+	}
+	.info_list a {
+		align-items: center;
+	}
+	.info_list img {
+		vertical-align: middle;
+		margin: 2px;
+	}
+	.header {
+		order: 1;
+		justify-content: flex-end;
+		position: static;
+		height: 200px;
+	}
+	.logo {
+		float: left;
+		width: 70%;
+	}
+	.logo a {
+		font-size: 30px;
+		padding: 50px 0;
+		padding: 3.125rem 0;
+		justify-content: flex-start
+	}
+	#logo_1 {
+		color: #4f94e4;
+	}
+	.logo img {
+		
+	}
+}

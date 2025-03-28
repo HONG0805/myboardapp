@@ -1,0 +1,393 @@
+/* 모바일용 CSS */
+/* 기본 CSS */
+#wrap {
+	display: flex;
+	flex-flow: column nowrap;
+	width: 80%;
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
+#wrap section {
+	box-sizing: border-box;
+}
+
+.info_section {
+	order: 1;
+	width: 100%;
+	background: white;
+	border-bottom: 1px solid black;
+}
+
+.info_list {
+	display: flex;
+}
+
+.info_list li {
+	width: 33.33%;
+	text-align: center;
+	font-weight: bold;
+}
+
+.info_list li a {
+	display: block;
+	padding: 15px 0;
+	padding: 0.938rem 0;
+	cursor: pointer;
+}
+
+.info_list img {
+	vertical-align: middle;
+	margin: 2px;
+}
+
+.header {
+	display: flex;
+	order: 2;
+	flex-direction: column;
+	position: relative;
+	width: 100%;
+}
+
+.logo {
+	order: 1;
+	width: 100%;
+	padding: 30px 0;
+	padding: 1.875rem 0;
+	font-size: 1.188rem;
+	font-size: 1.188rem;
+	line-height: 21px;
+	line-height: 1.313rem;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.logo a {
+	font-size: 20px;
+}
+
+#logo_1 {
+	color: #4f94e4;
+}
+
+.logo img {
+	vertical-align: middle;
+}
+
+div.my_info {
+	display: flex;
+	padding: 10px;
+	padding: 0.625rem;
+}
+
+.my_section {
+	order: 2;
+	position: relative;
+	width: 100%;
+	padding: 10px;
+	padding: 0.625rem;
+	border: 1px solid #1289dd;
+	border-radius: 10px/10px;
+}
+
+.my_section h1 {
+	flex: auto;
+	font-size: 18px;
+	line-height: 26px;
+	font-weight: bold;
+}
+
+div.my_info>a.logout {
+	color: white;
+	background: #4fa2e4;
+	padding: 8px;
+	border-radius: 10px;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+div.my_profile {
+	margin: 0 18px 14px 18px;
+	position: relative;
+	padding-left: 72px;
+}
+
+div.my_profile img {
+	display: block;
+	position: absolute;
+	left: 0;
+	border-radius: 10px;
+	width: 54px;
+	height: 54px;
+}
+
+div.my_profile h3 {
+	line-height: 20px;
+	font-size: 14px;
+	font-weight: blod;
+}
+
+div.my_profile p {
+	line-height: 18px;
+	font-size: 12px;
+}
+
+.my_section_1 {
+	order: 3;
+	position: relative;
+	width: 100%;
+	padding: 10px;
+	padding: 0.625rem;
+	border: 1px solid #1289dd;
+	border-radius: 10px/10px;
+	margin-top: 20px;
+}
+
+.my_section_1 h2 {
+	padding: 12px 24px;
+	flex: auto;
+	font-size: 18px;
+	line-height: 26px;
+	font-weight: bold;
+}
+
+.item {
+	padding: 12px 24px;
+	display: block;
+	line-height: 24px;
+	word-wrap: break-word;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.sign_section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	order: 2;
+	padding: 30px;
+	width: 100%;
+	align-items: center;
+}
+
+.signup {
+	border: 1px solid #1289dd;
+	border-radius: 10px;
+	padding: 20px;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto;
+}
+
+.loginbtn {
+	width: 100%;
+	max-width: 1000px;
+	color: white;
+	padding: 15px;
+	border-radius: 5px;
+	margin: 20px 0;
+	font-weight: bold;
+	text-align: center;
+	background-color: rgba(0, 147, 245);
+	font-size: 16px;
+	box-sizing: border-box;
+}
+
+.chat_rooms_section {
+	order: 4;
+	width: 100%;
+	padding: 20px;
+	background-color: #f8f8f8;
+	margin-top: 30px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.chat_rooms_section h2 {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 15px;
+}
+
+.chat_room_item {
+	background-color: white;
+	padding: 15px;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.chat_room_item p {
+	font-size: 1.1rem;
+	color: #333;
+	font-weight: bold;
+}
+
+.chat_room_item a {
+	padding: 10px 20px;
+	background-color: #4f94e4;
+	color: white;
+	text-decoration: none;
+	border-radius: 5px;
+	font-size: 1rem;
+	transition: background-color 0.3s;
+}
+
+.chat_room_item a:hover {
+	background-color: #357db7;
+}
+
+/* 태블릿용 CSS */
+@media all and (min-width:768px) {
+	.header {
+		flex-direction: row;
+		height: 180px;
+	}
+	.logo {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		width: 100%;
+		padding: 0;
+		text-align: center;
+		left: 0;
+	}
+	.logo a {
+		display: flex;
+		align-items: center;
+		padding: 50px;
+		padding: 3.125rem;
+		font-size: 40px;
+		justify-content: center;
+	}
+	#wrap {
+		flex-flow: row wrap;
+	}
+	.my_section {
+		order: 2;
+		margin: 0 auto;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 500px;
+	}
+	.my_section_1 {
+		order: 3;
+		margin: 0 auto;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		margin-top: 20px;
+		width: 500px;
+	}
+	.chat_rooms_section {
+		order: 4;
+		width: 500px;
+		margin: 0 auto;
+		position: relative;
+		padding: 20px;
+		background-color: #f8f8f8;
+		margin-top: 30px;
+		border-radius: 10px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	}
+}
+
+/* PC용 CSS */
+@media all and (min-width:1400px) {
+	/* 기본 CSS */
+	#wrap {
+		position: relative;
+		width: 50%;
+	}
+	.info_section {
+		order: 0;
+		position: absolute;
+		top: 70px;
+		top: 4.375rem;
+		right: 30px;
+		right: 1.875rem;
+		z-index: 30;
+		width: auto;
+		border-bottom: 0;
+	}
+	.info_list li {
+		width: auto;
+		margin-left: 30px;
+		margin-left: 1.25rem;
+		font-weight: bold;
+	}
+	.info_list li a {
+		padding: 0;
+	}
+	.info_list a {
+		align-items: center;
+	}
+	.info_list img {
+		vertical-align: middle;
+		margin: 2px;
+	}
+	.header {
+		order: 1;
+		justify-content: flex-end;
+		position: static;
+		height: 200px;
+	}
+	.logo {
+		float: left;
+		width: 70%;
+	}
+	.logo a {
+		font-size: 30px;
+		padding: 50px 0;
+		padding: 3.125rem 0;
+		justify-content: flex-start
+	}
+	#logo_1 {
+		color: #4f94e4;
+	}
+	.logo img {
+		vertical-align: middle;
+	}
+	.my_section {
+		order: 2;
+		margin: 0 auto;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		width: 500px;
+	}
+	.my_section_1 {
+		order: 3;
+		margin: 0 auto;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		margin-top: 20px;
+		width: 500px;
+	}
+	.chat_rooms_section {
+		order: 4;
+		width: 500px;
+		margin: 0 auto;
+		position: relative;
+		padding: 20px;
+		background-color: #f8f8f8;
+		margin-top: 30px;
+		margin-bottom: 50px;
+		border-radius: 10px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	}
+	div.my_info>h1 {
+		font-size: 22px;
+		font-weight: bold;
+	}
+}

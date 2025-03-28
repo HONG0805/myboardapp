@@ -1,22 +1,17 @@
 package com.github.hong0805.user;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
-public class User {
-	@Id
+public class UserDTO {
 	private String userID;
 	private String userPassword;
 	private String userEmail;
 	private String userName;
 
 	// 기본 생성자
-	public User() {
+	public UserDTO() {
 	}
 
 	// 매개변수 생성자
-	public User(String userID, String userPassword, String userEmail, String userName) {
+	public UserDTO(String userID, String userPassword, String userEmail, String userName) {
 		this.userID = userID;
 		this.userPassword = userPassword;
 		this.userEmail = userEmail;
@@ -57,7 +52,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [userID=" + userID + ", userPassword=" + userPassword + ", userEmail=" + userEmail + ", userName="
-				+ userName + "]";
+		return "UserDTO [userID=" + userID + ", userPassword=" + userPassword + ", userEmail=" + userEmail
+				+ ", userName=" + userName + "]";
 	}
 }

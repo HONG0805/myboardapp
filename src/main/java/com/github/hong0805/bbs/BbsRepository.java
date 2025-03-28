@@ -1,15 +1,15 @@
 package com.github.hong0805.bbs;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-public interface BbsRepository extends JpaRepository<Bbs, Long> {
-	@Query("SELECT b FROM Bbs b WHERE b.bbsAvailable = 1 AND "
-			+ "(b.bbsTitle LIKE %:keyword% OR b.bbsContent LIKE %:keyword%)")
-	Page<Bbs> searchBbs(@Param("keyword") String keyword, Pageable pageable);
-
-	Page<Bbs> findByBbsAvailable(int bbsAvailable, Pageable pageable);
+@Repository
+public interface BbsRepository extends JpaRepository<Bbs, Integer> {
+	// 사용자별 찜한 게시물 조회
+	@Query("SELECT b FROM Bbs b WHERE b.bbsID IN (SELECT jj.bbsID FROM Jjim jj WHERE jj.userID = :userID) ORDER BY b.bbsID DESC")
+	List<Bbs> findJjimListByUserID(@Param("userID") String userID, int offset, int limit);
 }

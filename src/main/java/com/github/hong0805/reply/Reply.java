@@ -1,47 +1,28 @@
 package com.github.hong0805.reply;
 
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import java.time.LocalDateTime;
+import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import com.github.hong0805.bbs.Bbs;
+
+import java.sql.Timestamp;
+
+@Data
 @Entity
-@Table(name = "reply")
-@Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "REPLY")
 public class Reply {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int replyID;
 
-	@Column(nullable = false)
-	private Long bbsId;
+	@ManyToOne
+	@JoinColumn(name = "bbsID")
+	private Bbs bbs;
 
-	@Column(nullable = false, columnDefinition = "TEXT")
-	private String content;
-
-	@Column(nullable = false)
-	private String userId;
-
-	@Column(nullable = false)
-	private boolean available = true;
-
-	@CreatedDate
-	@Column(updatable = false)
-	private LocalDateTime createdAt;
-
-	@Builder
-	public Reply(Long bbsId, String content, String userId) {
-		this.bbsId = bbsId;
-		this.content = content;
-		this.userId = userId;
-	}
+	private String replyContent;
+	private String userID;
+	private int replyAvailable;
+	private Timestamp replyDate;
 }
