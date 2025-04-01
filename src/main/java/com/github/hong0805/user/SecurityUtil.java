@@ -3,16 +3,13 @@ package com.github.hong0805.user;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class SecurityUtil {
+	private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-	private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-	// 비밀번호를 해시화하는 메서드
-	public static String hashPassword(String password) {
-		return passwordEncoder.encode(password);
+	public static String hashPassword(String rawPassword) {
+		return encoder.encode(rawPassword);
 	}
 
-	// 비밀번호 비교하는 메서드
 	public static boolean checkPassword(String rawPassword, String encodedPassword) {
-		return passwordEncoder.matches(rawPassword, encodedPassword);
+		return encoder.matches(rawPassword, encodedPassword);
 	}
 }

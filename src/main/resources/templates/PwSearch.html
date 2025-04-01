@@ -1,48 +1,101 @@
 <!DOCTYPE HTML>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
+<meta name="_csrf" th:content="${_csrf.token}" />
+<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-<title>아이디/비밀번호 찾기</title>
-<link rel="stylesheet" type="text/css" href="@{/CSS/reset.css}">
-<link rel="stylesheet" type="text/css" href="@{/CSS/PwSearch.css}">
-<link rel="shortcut icon" href="@{/images/favicon/favicon.ico}">
+<title>비밀번호 찾기 - 강남대학교 중고장터</title>
+<link rel="stylesheet" th:href="@{/css/PwSearch.css}">
+<link rel="stylesheet" th:href="@{/css/reset.css}">
+<link rel="shortcut icon" th:href="@{/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	href="@{/images/favicon/flat-design-touch.png}">
-<script src="@{/js/jquery.min.js}"></script>
-
+	th:href="@{/images/favicon/flat-design-touch.png}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-        window.addEventListener('keyup', () => {
-            const signbtn = document.getElementById('signbtn');
-            const userName = document.getElementById("user_Name").value;
-            const userId = document.getElementById('user_ID').value;
-            const userEmail = document.getElementById('user_Email').value;
-            if (userName.length > 0 && userId.length > 0 && userEmail.length > 0) {
-                signbtn.disabled = false;
-                signbtn.classList.add('active');
-            } else {
-                signbtn.disabled = true;
-                signbtn.classList.remove('active');
-            }
-        })
+$(document).ready(function() {
+    // CSRF 토큰 변수에 저장 (페이지 로드 시 한 번만 읽음)
+    const csrfToken = $('meta[name="_csrf"]').attr('content');
+    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+    // 입력 필드 유효성 검사
+    $('input[name="userName"], input[name="userID"], input[name="userEmail"]').on('input', function() {
+        const allFilled = $('#userName').val().trim() && 
+                         $('#userID').val().trim() && 
+                         $('#userEmail').val().trim();
         
-        function pw_search() {
-    var frm = document.pwsearch;
+        $('#sendCodeBtn').prop('disabled', !allFilled)
+                        .toggleClass('active', allFilled);
+    });
+
+    // 인증코드 전송
+    $('#sendCodeBtn').click(function() {
+    const userName = $('#userName').val().trim();
+    const userID = $('#userID').val().trim();
+    const userEmail = $('#userEmail').val().trim();
     
-    if (frm.userName.value.length < 1) {
-        alert("이름을 입력해주세요");
+    if (!userName || !userID || !userEmail) {
+        alert('모든 정보를 입력해주세요.');
         return;
     }
-    if (frm.userID.value.length < 5) {
-        alert("아이디를 입력해주세요");
-        return;
-    }
-    
-    frm.method = "post";
-    frm.action = "@{/pwSearchSuccess}";
-    frm.submit();
-}
+
+    $.ajax({
+        url: '/user/sendVerificationCode',
+        type: 'POST',
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+        },
+        data: JSON.stringify({ 
+            userName: userName,
+            userID: userID,
+            userEmail: userEmail
+        }),
+        success: function(response) {
+            alert('인증코드가 발송되었습니다.');
+            $('#initialForm').hide(); // 초기 입력 폼 숨기기
+            $('#verificationSection').show(); // 인증코드 입력 섹션 표시
+            $('#userEmail').prop('readonly', true); // 이메일 수정 방지
+        },
+        error: function(xhr) {
+            // 서버가 JSON을 반환하지 않으면 xhr.responseText를 사용하여 오류 메시지 출력
+            alert(xhr.responseJSON ? xhr.responseJSON.message : (xhr.responseText || '오류가 발생했습니다.'));
+        }
+    });
+});
+
+
+    // 인증코드 확인
+    $('#verifyCodeBtn').click(function() {
+        const code = $('#verificationCode').val().trim();
+        const userEmail = $('#userEmail').val().trim();
+        
+        if (!code) {
+            alert('인증코드를 입력해주세요.');
+            return;
+        }
+
+        $.ajax({
+            url: '/user/verifyCode',
+            type: 'POST',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+            },
+            data: JSON.stringify({
+                userEmail: userEmail,
+                code: code
+            }),
+            contentType: 'application/json',
+            success: function(response) {
+                window.location.href = '/user/changePassword?email=' + encodeURIComponent(userEmail);
+            },
+            error: function(xhr) {
+                alert(xhr.responseJSON?.message || '인증 실패');
+            }
+        });
+    });
+});
 </script>
 </head>
 
@@ -50,40 +103,54 @@
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a href="@{/Login}">Kangnam University</a>
+				<a th:href="@{/user/login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a href="@{/Login}">중고장터</a>
+					<a th:href="@{/user/login}">중고장터</a>
 				</h3>
 			</div>
 		</header>
 
 		<section class="sign_section">
-			<form action="@{/pwSearch}" method="POST">
+			<!-- 1단계: 사용자 정보 입력 -->
+			<div th:unless="${codeSent}">
 				<div class="signup">
 					<h2>비밀번호 찾기</h2>
+
+					<!-- 오류 메시지 표시 -->
+					<div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
 					<div class="text">이름</div>
-					<div>
-						<input id="user_Name" name="userName" placeholder="이름"
-							class="input_text" required>
-					</div>
+					<input type="text" id="userName" name="userName" placeholder="이름"
+						class="input_text" required>
+
 					<div class="text">아이디</div>
-					<div>
-						<input id="user_ID" name="userID" placeholder="아이디"
-							class="input_text" required>
-					</div>
+					<input type="text" id="userID" name="userID" placeholder="아이디"
+						class="input_text" required>
+
 					<div class="text">이메일</div>
-					<div>
-						<input id="user_Email" name="userEmail"
-							placeholder="이메일@example.com" class="input_text" required>
-					</div>
-					<div>
-						<button type="submit" id="signbtn" class="signbtn" value="비밀번호 찾기"
-							disabled>비밀번호 찾기</button>
-					</div>
+					<input type="email" id="userEmail" name="userEmail"
+						placeholder="이메일@example.com" class="input_text" required>
+
+					<button type="button" id="sendCodeBtn" class="signbtn" disabled>인증코드
+						전송</button>
 				</div>
-			</form>
+			</div>
+
+			<!-- 2단계: 인증코드 입력 -->
+			<div th:if="${codeSent}">
+				<div class="signup">
+					<h2>인증코드 입력</h2>
+
+					<div class="text">인증코드</div>
+					<input type="text" id="verificationCode" name="verificationCode"
+						placeholder="이메일로 전송된 6자리 코드" class="input_text" required>
+
+					<button type="button" id="verifyCodeBtn" class="signbtn">인증
+						확인</button>
+				</div>
+			</div>
 		</section>
 	</div>
 </body>

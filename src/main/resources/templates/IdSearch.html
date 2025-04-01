@@ -4,41 +4,65 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-<title>아이디/비밀번호 찾기</title>
-<link rel="stylesheet" type="text/css"
-	th:href="@{/static/CSS/reset.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/static/CSS/IdSearch.css}">
-<link rel="shortcut icon"
-	th:href="@{/static/images/favicon/favicon.ico}">
+<title>아이디 찾기 - 강남대학교 중고장터</title>
+<link rel="stylesheet" th:href="@{/css/IdSearch.css}">
+<link rel="stylesheet" th:href="@{/css/reset.css}">
+<link rel="shortcut icon" th:href="@{/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
-	th:href="@{/static/images/favicon/flat-design-touch.png}">
-<script th:src="@{/static/js/jquery.min.js}"></script>
+	th:href="@{/images/favicon/flat-design-touch.png}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-    window.addEventListener('keyup', () => {
-        const signbtn = document.getElementById('signbtn');
-        const userName = document.getElementById('name').value;
-        const userEmail = document.getElementById('email').value;
-        if(userName.length > 0 && userEmail.length > 0) {
-            signbtn.disabled = false;
-            signbtn.classList.add('active');
-        } else {
-            signbtn.disabled = true;
-            signbtn.classList.remove('active');
-        }
-    });
+	$(document).ready(
+			function() {
+				// 입력 필드 변경 감지
+				$('input[name="userName"], input[name="userEmail"]').on(
+						'keyup', function() {
+							validateForm();
+						});
 
-    function id_search() {
-        var frm = document.idsearch;
-        if (frm.userName.value.length < 1) {
-            alert("이름을 입력해주세요");
-            return;
-        }
+				// 폼 제출 처리
+				$('#idSearchForm').on('submit', function(e) {
+					e.preventDefault();
+					submitIdSearch();
+				});
+			});
 
-        frm.method = "post";
-        frm.action = "/IdSearch_success";
-        frm.submit();
-    }
+	function validateForm() {
+		const userName = $('input[name="userName"]').val().trim();
+		const userEmail = $('input[name="userEmail"]').val().trim();
+		const signbtn = $('#signbtn');
+
+		if (userName.length > 0 && userEmail.length > 0) {
+			signbtn.prop('disabled', false).addClass('active');
+		} else {
+			signbtn.prop('disabled', true).removeClass('active');
+		}
+	}
+
+	function submitIdSearch() {
+		const userName = $('input[name="userName"]').val().trim();
+		const userEmail = $('input[name="userEmail"]').val().trim();
+
+		if (!userName) {
+			alert("이름을 입력해주세요");
+			return;
+		}
+
+		if (!userEmail) {
+			alert("이메일을 입력해주세요");
+			return;
+		}
+
+		// 이메일 유효성 검사
+		const emailReg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+		if (!emailReg.test(userEmail)) {
+			alert("올바른 이메일 형식을 입력해주세요");
+			return;
+		}
+
+		// 폼 제출
+		$('#idSearchForm').off('submit').submit();
+	}
 </script>
 </head>
 
@@ -46,32 +70,46 @@
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a th:href="@{/login}">Kangnam University</a>
+				<a th:href="@{/user/login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a th:href="@{/login}">중고장터</a>
+					<a th:href="@{/user/login}">중고장터</a>
 				</h3>
 			</div>
 		</header>
 
 		<section class="sign_section">
-			<form name="idsearch" method="post" th:action="@{/user/findId}">
+			<form id="idSearchForm" name="idsearch" method="post"
+				th:action="@{/user/findId}">
+				<input type="hidden" th:name="${_csrf.parameterName}"
+					th:value="${_csrf.token}" />
+
 				<div class="signup">
 					<h2>아이디 찾기</h2>
+
+					<!-- 에러 메시지 표시 -->
+					<div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+					<div th:if="${message}" class="alert alert-success"
+						th:text="${message}"></div>
+
 					<div class="text">이름</div>
 					<div>
-						<input id="name" name="userName" placeholder="이름"
-							class="input_text" th:value="${userName}">
+						<input type="text" id="name" name="userName"
+							placeholder="이름" class="input_text"
+							th:value="${userName}" required>
 					</div>
+
 					<div class="text">이메일</div>
 					<div>
-						<input id="email" name="userEmail" placeholder="이메일@example.com"
-							class="input_text" th:value="${userEmail}">
+						<input type="email" id="email" name="userEmail"
+							placeholder="이메일" class="input_text"
+							th:value="${userEmail}" required>
 					</div>
+
 					<div>
-						<input type="button" id="signbtn" class="signbtn" value="아이디 찾기"
-							onclick="id_search()" disabled>
+						<button type="submit" id="signbtn" class="signbtn" disabled>아이디
+							찾기</button>
 					</div>
 				</div>
 			</form>

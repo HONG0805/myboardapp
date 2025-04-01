@@ -78,21 +78,21 @@ input::placeholder {
 }
 
 .signbtn {
-	width: 95%;
+	width: 100%;
 	color: white;
 	padding: 5px;
 	margin-top: 20px;
 	border-radius: 5px;
 	font-weight: bold;
 	text-align: center;
-}
-
-form input.signbtn {
 	background-color: rgba(0, 147, 245, 0.5);
+	cursor: not-allowed;
 }
 
-form input.active.signbtn {
+.signbtn.active {
 	background-color: rgba(0, 147, 245);
+	color: #fff;
+	cursor: pointer;
 }
 
 /* 태블릿용 CSS */

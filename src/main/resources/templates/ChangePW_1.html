@@ -6,10 +6,8 @@
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>비밀번호 변경</title>
 <!-- 수정된 CSS 경로 -->
-<link rel="stylesheet" type="text/css"
-	th:href="@{/static/CSS/ChangePW_1.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/static/CSS/reset.css}">
+<link rel="stylesheet" th:href="@{/css/ChangePW_1.css}">
+<link rel="stylesheet" th:href="@{/css/reset.css}">
 <script th:src="@{/static/js/jquery.min.js}"></script>
 <script type="text/javascript">
 	function validate() {
@@ -37,7 +35,7 @@
 </script>
 </head>
 <body>
-	<form th:action="@{/user/changePassword}" method="post"
+	<form th:action="@@{/user/changePassword}" method="post"
 		onsubmit="return validate()">
 		<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
 		<div id="wrap">

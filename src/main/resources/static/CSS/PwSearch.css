@@ -72,7 +72,7 @@ input::placeholder {
 	border: 1px solid #a6a6a6;
 	border-radius: 5px;
 	font-size: 14px;
-	width: 200px;
+	width: 100%;
 	padding: 5px;
 }
 
@@ -84,14 +84,14 @@ input::placeholder {
 	border-radius: 5px;
 	font-weight: bold;
 	text-align: center;
-}
-
-form button {
 	background-color: rgba(0, 147, 245, 0.5);
+	cursor: not-allowed;
+	
 }
-
-form button.active {
+.signbtn.active {
 	background-color: rgba(0, 147, 245);
+	color: #fff;
+	cursor: pointer;
 }
 
 /* 태블릿용 CSS */
@@ -113,7 +113,6 @@ form button.active {
 	}
 	.input_text {
 		font-size: 18px;
-		width: 300px;
 	}
 	.signbtn {
 		font-size: 20px;

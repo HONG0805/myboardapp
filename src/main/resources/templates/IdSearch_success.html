@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>아이디/비밀번호 찾기</title>
+<link rel="stylesheet" th:href="@{/css/reset.css}">
+<link rel="stylesheet" th:href="@{/css/IdSearch_success.css}">
+<link rel="shortcut icon"
+	th:href="@{/static/images/favicon/favicon.ico}">
+<link rel="apple-touch-icon-precomposed"
+	th:href="@{/static/images/favicon/flat-design-touch.png}">
+<script th:src="@{/static/js/jquery.min.js}"></script>
+</head>
+
+<body>
+	<div id="wrap">
+		<header class="header">
+			<h1>
+				<a th:href="@{/user/login}">Kangnam University</a>
+			</h1>
+			<div>
+				<h3>
+					<a th:href="@{/user/login}">중고장터</a>
+				</h3>
+			</div>
+		</header>
+
+		<section class="idsearch_section">
+			<div class="idsearch_success">
+				<h2>아이디 결과</h2>
+
+				<!-- 아이디가 존재할 때 -->
+				<div th:if="${userID}" class="IDresult">
+					회원님의 아이디는 <span th:text="${userID}"></span> 입니다.
+				</div>
+
+				<!-- 아이디가 존재하지 않을 때 -->
+				<div th:unless="${userID}">
+					<h4 style="font-size: 14px;"
+						th:text="${message} ?: '일치하는 아이디가 없습니다.'"></h4>
+				</div>
+
+				<div class="btn_IDsearch">
+					<input type="button" class="loginbtn" value="로그인"
+						onclick="location.href='/user/login'" /> <input type="button"
+						class="loginbtn" value="비밀번호찾기"
+						onclick="location.href='/user/findPassword'" /> <input
+						th:unless="${userID}" type="button" class="loginbtn" value="다시찾기"
+						onclick="location.href='/user/findId'" /> <input
+						th:unless="${userID}" type="button" class="loginbtn" value="회원가입"
+						onclick="location.href='/user/register'" />
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
+</html>

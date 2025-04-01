@@ -1,15 +1,23 @@
 package com.github.hong0805.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
 public class User {
-	@Id
-	private String userID;
-	private String userPassword;
-	private String userEmail;
-	private String userName;
+    @Id
+    @Column(name = "userID") 
+    private String userID;
+
+    @Column(name = "userPassword")
+    private String userPassword;
+
+    @Column(name = "userEmail")
+    private String userEmail;
+
+    @Column(name = "userName")
+    private String userName;
 
 	// 기본 생성자
 	public User() {

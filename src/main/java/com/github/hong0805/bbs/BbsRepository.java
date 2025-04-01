@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BbsRepository extends JpaRepository<Bbs, Integer> {
 	// 사용자별 찜한 게시물 조회
-	@Query("SELECT b FROM Bbs b WHERE b.bbsID IN (SELECT jj.bbsID FROM Jjim jj WHERE jj.userID = :userID) ORDER BY b.bbsID DESC")
-	List<Bbs> findJjimListByUserID(@Param("userID") String userID, int offset, int limit);
+	@Query(value = "SELECT * FROM bbs WHERE bbsID IN (SELECT bbsID FROM jjim WHERE userID = :userID) ORDER BY bbsID DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Bbs> findJjimListByUserID(@Param("userID") String userID, @Param("limit") int limit,
+			@Param("offset") int offset);
+
 }

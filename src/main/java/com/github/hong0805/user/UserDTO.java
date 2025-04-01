@@ -1,9 +1,20 @@
 package com.github.hong0805.user;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 public class UserDTO {
+	@Id
+	@Column(name = "userID")
 	private String userID;
+
+	@Column(name = "userPassword")
 	private String userPassword;
+
+	@Column(name = "userEmail")
 	private String userEmail;
+
+	@Column(name = "userName")
 	private String userName;
 
 	// 기본 생성자
