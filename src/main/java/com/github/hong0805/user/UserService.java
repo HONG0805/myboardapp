@@ -29,11 +29,20 @@ public class UserService {
 	// 회원가입 (비밀번호 유효성 검사 및 해시화 후 저장)
 	@Transactional
 	public boolean register(User user) {
-		if (userRepository.existsById(user.getUserID())) {
-			return false; // 아이디가 이미 존재하면 실패
-		}
-		userRepository.save(user); // 회원가입 처리
-		return true;
+	    // 1. 아이디 중복 검사
+	    if (userRepository.existsById(user.getUserID())) {
+	        return false;
+	    }
+	    
+	    // 2. 이메일 중복 검사
+	    if (userRepository.existsByUserEmail(user.getUserEmail())) {
+	        return false;
+	    }
+	    
+	    // 3. 비밀번호 암호화 및 저장
+	    user.setUserPassword(SecurityUtil.hashPassword(user.getUserPassword()));
+	    userRepository.save(user);
+	    return true;
 	}
 
 	// 비밀번호 변경 (아이디 기반)
@@ -48,7 +57,7 @@ public class UserService {
 		return false;
 	}
 
-	// 비밀번호 변경 (이메일 기반) - 컨트롤러에서 요구하는 메서드
+	// 비밀번호 변경 (이메일 기반)
 	public boolean changePasswordByEmail(String userEmail, String newPassword) {
 		Optional<User> optionalUser = userRepository.findByUserEmail(userEmail);
 		if (optionalUser.isPresent() && isValidPassword(newPassword)) {

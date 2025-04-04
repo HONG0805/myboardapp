@@ -1,13 +1,12 @@
 package com.github.hong0805.bbs;
 
+import java.util.List;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/bbs")
@@ -16,83 +15,136 @@ public class BbsController {
 	@Autowired
 	private BbsService bbsService;
 
-	// 게시글 리스트 조회
-	@GetMapping("/")
-	public String getAllBbs(Model model) {
-		List<Bbs> bbsList = bbsService.getAllBbs();
+	// 게시판 메인 페이지 (페이징 처리)
+	@GetMapping("/mainpage")
+	public String mainPage(Model model, @RequestParam(defaultValue = "1") int pageNumber,
+			@RequestParam(required = false) String searchWord, HttpSession session) {
+
+		// 세션에서 사용자 ID 확인
+		String userID = (String) session.getAttribute("userID");
+		if (userID == null) {
+			return "redirect:/user/login";
+		}
+		model.addAttribute("userID", userID);
+
+		// 페이징 설정
+		int pageSize = 10;
+		int offset = (pageNumber - 1) * pageSize;
+
+		// 검색 여부에 따라 데이터 조회
+		List<Bbs> bbsList;
+		if (searchWord != null && !searchWord.trim().isEmpty()) {
+			bbsList = bbsService.searchBbs(searchWord, pageSize, offset);
+			model.addAttribute("searchWord", searchWord);
+		} else {
+			bbsList = bbsService.getAllBbs(pageSize, offset);
+		}
+
+		// 총 게시물 수 계산 (추가 구현 필요)
+		int totalCount = bbsService.getTotalCount(searchWord);
+		int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+		// 모델에 데이터 추가
 		model.addAttribute("bbsList", bbsList);
+		model.addAttribute("currentPage", pageNumber);
+		model.addAttribute("totalPages", totalPages);
+
 		return "MainPage"; 
 	}
 
-	// 특정 게시글 조회
-	@GetMapping("/{bbsID}")
-	public String getBbsById(@PathVariable int bbsID, Model model) {
+	// 게시글 상세 보기
+	@GetMapping("/view/{id}")
+	public String viewBbs(@PathVariable("id") int bbsID, Model model) {
 		Bbs bbs = bbsService.getBbsById(bbsID);
-		if (bbs != null) {
-			model.addAttribute("bbs", bbs);
-			return "BoardDetail";
-		} else {
-			return "redirect:/bbs/"; // 게시글을 찾을 수 없으면 게시글 리스트로 리디렉션
+		if (bbs == null) {
+			return "redirect:/bbs/mainpage"; 
 		}
+		model.addAttribute("bbs", bbs);
+		return "bbs/view"; 
 	}
 
-	// 게시글 작성 페이지
-	@GetMapping("/create")
-	public String createBbsPage() {
-		return "CreateBbs"; // CreateBbs.html 템플릿 반환
-	}
-
-	// 게시글 작성 처리
-	@PostMapping("/create")
-	public String createBbs(@RequestParam String bbsTitle, @RequestParam String userID, @RequestParam String bbsContent,
-			@RequestParam int cost, @RequestParam(required = false) MultipartFile file,
-			RedirectAttributes redirectAttributes) {
-		Bbs createdBbs = bbsService.createBbs(bbsTitle, userID, bbsContent, cost, file);
-		if (createdBbs != null) {
-			redirectAttributes.addFlashAttribute("message", "게시글 작성 성공");
-			return "redirect:/bbs/"; // 게시글 작성 후 게시글 리스트로 리디렉션
-		} else {
-			redirectAttributes.addFlashAttribute("message", "게시글 작성 실패");
-			return "redirect:/bbs/board"; // 게시글 작성 실패 시 작성 페이지로 리디렉션
+	// 글쓰기 폼
+	@GetMapping("/write")
+	public String writeForm(HttpSession session, Model model) {
+		String userID = (String) session.getAttribute("userID");
+		if (userID == null) {
+			return "redirect:/user/login";
 		}
+
+		Bbs bbs = new Bbs();
+		bbs.setUserID(userID); 
+		model.addAttribute("bbs", bbs);
+		return "bbs/Board"; 
 	}
 
-	// 게시글 수정 페이지
-	@GetMapping("/update/{bbsID}")
-	public String updateBbsPage(@PathVariable int bbsID, Model model) {
+	// 글쓰기 처리
+	@PostMapping("/write")
+	public String writeBbs(@ModelAttribute Bbs bbs, HttpSession session, RedirectAttributes redirectAttributes) {
+
+		String userID = (String) session.getAttribute("userID");
+		if (userID == null) {
+			return "redirect:/user/login";
+		}
+
+		bbs.setUserID(userID);
+		bbsService.saveBbs(bbs);
+
+		redirectAttributes.addFlashAttribute("message", "글이 등록되었습니다.");
+		return "redirect:/bbs/mainpage";
+	}
+
+	// 글 수정 폼
+	@GetMapping("/edit/{id}")
+	public String editForm(@PathVariable("id") int bbsID, HttpSession session, Model model) {
+
+		String userID = (String) session.getAttribute("userID");
 		Bbs bbs = bbsService.getBbsById(bbsID);
-		if (bbs != null) {
-			model.addAttribute("bbs", bbs);
-			return "UpdateBbs"; // UpdateBbs.html 템플릿 반환
-		} else {
-			return "redirect:/bbs/"; // 게시글을 찾을 수 없으면 게시글 리스트로 리디렉션
+
+		// 권한 확인: 작성자만 수정 가능
+		if (bbs == null || !bbs.getUserID().equals(userID)) {
+			return "redirect:/bbs/mainpage";
 		}
+
+		model.addAttribute("bbs", bbs);
+		return "bbs/update";
 	}
 
-	// 게시글 수정 처리
-	@PostMapping("/update/{bbsID}")
-	public String updateBbs(@PathVariable int bbsID, @RequestParam String bbsTitle, @RequestParam String bbsContent,
-			@RequestParam int cost, @RequestParam(required = false) MultipartFile file,
+	// 글 수정 처리
+	@PostMapping("/edit/{id}")
+	public String editBbs(@PathVariable("id") int bbsID, @ModelAttribute Bbs updatedBbs, HttpSession session,
 			RedirectAttributes redirectAttributes) {
-		Bbs updatedBbs = bbsService.updateBbs(bbsID, bbsTitle, bbsContent, cost, file);
-		if (updatedBbs != null) {
-			redirectAttributes.addFlashAttribute("message", "게시글 수정 성공");
-			return "redirect:/bbs/"; // 게시글 수정 후 게시글 리스트로 리디렉션
-		} else {
-			redirectAttributes.addFlashAttribute("message", "게시글 수정 실패");
-			return "redirect:/bbs/update/" + bbsID; // 게시글 수정 실패 시 수정 페이지로 리디렉션
+
+		String userID = (String) session.getAttribute("userID");
+		Bbs existingBbs = bbsService.getBbsById(bbsID);
+
+		// 권한 확인
+		if (existingBbs == null || !existingBbs.getUserID().equals(userID)) {
+			return "redirect:/bbs/mainpage";
 		}
+
+		// 기존 데이터 업데이트
+		existingBbs.setBbsTitle(updatedBbs.getBbsTitle());
+		existingBbs.setBbsContent(updatedBbs.getBbsContent());
+		bbsService.saveBbs(existingBbs);
+
+		redirectAttributes.addFlashAttribute("message", "글이 수정되었습니다.");
+		return "redirect:/bbs/view/" + bbsID;
 	}
 
-	// 게시글 삭제 (논리적 삭제)
-	@GetMapping("/delete/{bbsID}")
-	public String deleteBbs(@PathVariable int bbsID, RedirectAttributes redirectAttributes) {
-		boolean success = bbsService.deleteBbs(bbsID);
-		if (success) {
-			redirectAttributes.addFlashAttribute("message", "게시글 삭제 성공");
-		} else {
-			redirectAttributes.addFlashAttribute("message", "게시글 삭제 실패");
+	// 글 삭제 처리
+	@PostMapping("/delete/{id}")
+	public String deleteBbs(@PathVariable("id") int bbsID, HttpSession session, RedirectAttributes redirectAttributes) {
+
+		String userID = (String) session.getAttribute("userID");
+		Bbs bbs = bbsService.getBbsById(bbsID);
+
+		// 권한 확인
+		if (bbs == null || !bbs.getUserID().equals(userID)) {
+			return "redirect:/bbs/mainpage";
 		}
-		return "redirect:/bbs/"; // 삭제 후 게시글 리스트로 리디렉션
+
+		bbsService.deleteBbs(bbsID);
+		redirectAttributes.addFlashAttribute("message", "글이 삭제되었습니다.");
+		return "redirect:/bbs/mainpage";
 	}
 }

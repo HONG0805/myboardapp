@@ -1,14 +1,12 @@
 package com.github.hong0805.bbs;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BbsService {
@@ -16,72 +14,53 @@ public class BbsService {
 	@Autowired
 	private BbsRepository bbsRepository;
 
-	private static final String UPLOAD_DIR = "C:/upload/"; // 파일 업로드 경로
-
-	public List<Bbs> getAllBbs() {
-		return bbsRepository.findAll();
+	// 전체 게시글 조회 (페이징 포함)
+	public List<Bbs> getAllBbs(int limit, int offset) {
+		Pageable pageable = PageRequest.of(offset / limit, limit);
+		Page<Bbs> page = bbsRepository.findAll(pageable);
+		return page.getContent();
 	}
 
+	// ID로 게시글 1개 조회
 	public Bbs getBbsById(int bbsID) {
 		return bbsRepository.findById(bbsID).orElse(null);
 	}
 
-	public Bbs createBbs(String bbsTitle, String userID, String bbsContent, int cost, MultipartFile file) {
-		Bbs bbs = new Bbs();
-		bbs.setBbsTitle(bbsTitle);
-		bbs.setUserID(userID);
-		bbs.setBbsDate(String.valueOf(System.currentTimeMillis())); // 현재 시간
-		bbs.setBbsContent(bbsContent);
-		bbs.setBbsAvailable(1); // 기본값으로 활성화
-		bbs.setCost(cost);
-
-		// 파일 업로드 처리
-		if (!file.isEmpty()) {
-			String filePath = saveFile(file);
-			bbs.setBbsImage(filePath);
-		}
-
-		return bbsRepository.save(bbs);
+	// 게시글 저장 (등록/수정)
+	public void saveBbs(Bbs bbs) {
+		bbsRepository.save(bbs);
 	}
 
-	public Bbs updateBbs(int bbsID, String bbsTitle, String bbsContent, int cost, MultipartFile file) {
-		Bbs bbs = bbsRepository.findById(bbsID).orElse(null);
-		if (bbs != null) {
-			bbs.setBbsTitle(bbsTitle);
-			bbs.setBbsContent(bbsContent);
-			bbs.setCost(cost);
-
-			// 파일 업로드 처리
-			if (!file.isEmpty()) {
-				String filePath = saveFile(file);
-				bbs.setBbsImage(filePath);
-			}
-
-			return bbsRepository.save(bbs);
-		}
-		return null;
+	// 게시글 삭제
+	public void deleteBbs(int bbsID) {
+		bbsRepository.deleteById(bbsID);
 	}
 
-	public boolean deleteBbs(int bbsID) {
-		Bbs bbs = bbsRepository.findById(bbsID).orElse(null);
-		if (bbs != null) {
-			bbs.setBbsAvailable(0); // 논리적 삭제
-			bbsRepository.save(bbs);
-			return true;
-		}
-		return false;
+	// 검색어 기반 게시글 조회 (페이징 포함)
+	public List<Bbs> searchBbs(String keyword, int limit, int offset) {
+		Pageable pageable = PageRequest.of(offset / limit, limit);
+		Page<Bbs> page = bbsRepository.searchByKeyword(keyword, pageable);
+		return page.getContent();
 	}
 
-	// 파일 업로드 메서드
-	private String saveFile(MultipartFile file) {
-		String fileName = file.getOriginalFilename();
-		String filePath = UPLOAD_DIR + fileName;
-		File dest = new File(filePath);
-		try {
-			file.transferTo(dest);
-		} catch (IOException e) {
-			e.printStackTrace();
+	// 총 게시글 수 반환 (검색어 포함 가능)
+	public int getTotalCount(String keyword) {
+		if (keyword == null || keyword.isEmpty()) {
+			return (int) bbsRepository.count();
+		} else {
+			return bbsRepository.countByKeyword(keyword);
 		}
-		return filePath;
+	}
+
+	// 페이지 단위 게시글 조회 (비로그인 메인페이지용)
+	public List<Bbs> getBbsList(int pageNumber, String searchWord) {
+		int pageSize = 10;
+		int offset = (pageNumber - 1) * pageSize;
+
+		if (searchWord == null || searchWord.isEmpty()) {
+			return getAllBbs(pageSize, offset);
+		} else {
+			return searchBbs(searchWord, pageSize, offset);
+		}
 	}
 }

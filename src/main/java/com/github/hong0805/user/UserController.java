@@ -38,19 +38,21 @@ public class UserController {
 	public String loginPage() {
 		return "Login";
 	}
-
-	// 로그인 처리
+	
+	// 로그인
 	@PostMapping("/login")
-	public String login(@RequestParam String userID, @RequestParam String userPassword,
-			RedirectAttributes redirectAttributes) {
-		System.out.println("Login attempt - ID: " + userID);
-		boolean success = userService.login(userID, userPassword);
-		if (success) {
-			return "redirect:/bbs";
-		} else {
-			redirectAttributes.addFlashAttribute("message", "아이디 또는 비밀번호가 잘못되었습니다");
-			return "redirect:/user/login";
-		}
+	public String login(@RequestParam String userID, 
+	                   @RequestParam String userPassword,
+	                   HttpSession session,
+	                   RedirectAttributes redirectAttributes) {
+	    
+	    if (userService.login(userID, userPassword)) {
+	        session.setAttribute("userID", userID);
+	        return "redirect:/bbs/mainpage";
+	    } else {
+	        redirectAttributes.addFlashAttribute("error", "로그인 실패");
+	        return "redirect:/user/login";
+	    }
 	}
 
 	// 회원가입 페이지 요청
@@ -76,8 +78,6 @@ public class UserController {
 	public String register(@ModelAttribute User user, @RequestParam String userPasswordCheck,
 			RedirectAttributes redirectAttributes) {
 
-		System.out.println("전달받은 사용자 정보: " + user.getUserID() + ", " + user.getUserEmail());
-
 		try {
 			// 1. 비밀번호 일치 확인
 			if (!user.getUserPassword().equals(userPasswordCheck)) {
@@ -86,34 +86,24 @@ public class UserController {
 			}
 
 			// 2. 비밀번호 유효성 검사
-			String rawPassword = user.getUserPassword();
-			if (!isValidPassword(rawPassword)) {
-				System.out.println("비밀번호 검증 실패 (원본): " + rawPassword);
+			if (!isValidPassword(user.getUserPassword())) {
 				redirectAttributes.addFlashAttribute("error", "비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.");
 				return "redirect:/user/register";
 			}
 
-			// 3. 비밀번호 암호화
-			String encodedPassword = SecurityUtil.hashPassword(rawPassword);
-			user.setUserPassword(encodedPassword);
-			System.out.println("해시된 비밀번호: " + encodedPassword);
-
-			// 4. 회원가입 처리
+			// 3. 회원가입 처리 (이메일 중복 검사 포함)
 			boolean success = userService.register(user);
-			System.out.println("회원가입 결과: " + success);
-
 			if (success) {
-				// 5. 성공 시 처리
 				redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다.");
 				return "redirect:/user/login";
 			} else {
-				redirectAttributes.addFlashAttribute("error", "회원가입 실패: 아이디가 이미 사용 중입니다.");
+				// 실패 시 원인 구분
+				String errorMsg = userRepository.existsById(user.getUserID()) ? "아이디가 이미 사용 중입니다." : "이메일이 이미 사용 중입니다.";
+				redirectAttributes.addFlashAttribute("error", "회원가입 실패: " + errorMsg);
 				return "redirect:/user/register";
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("회원가입 오류: " + e.getMessage());
-			redirectAttributes.addFlashAttribute("error", "회원가입 처리 중 오류가 발생했습니다: " + e.getMessage());
+			redirectAttributes.addFlashAttribute("error", "회원가입 처리 중 오류가 발생했습니다.");
 			return "redirect:/user/register";
 		}
 	}
@@ -168,10 +158,15 @@ public class UserController {
 	// 인증 코드 확인
 	@PostMapping("/verifyCode")
 	@ResponseBody
-	public ResponseEntity<String> verifyCode(@RequestParam String userEmail, @RequestParam String code,
-			HttpSession session) {
+	public ResponseEntity<String> verifyCode(@RequestBody Map<String, String> requestData, HttpSession session) {
+		String userEmail = requestData.get("userEmail");
+		String code = requestData.get("code");
 
 		String savedCode = verificationCodes.get(userEmail);
+		System.out.println(">>> 인증 요청 이메일: " + userEmail);
+		System.out.println(">>> 입력된 코드: " + code);
+		System.out.println(">>> 저장된 코드: " + savedCode);
+
 		if (savedCode == null || !savedCode.equals(code)) {
 			return ResponseEntity.badRequest().body("인증 코드가 일치하지 않습니다.");
 		}
@@ -184,8 +179,9 @@ public class UserController {
 	}
 
 	@PostMapping("/changePassword")
-	public String processPasswordChange(@RequestParam String newPassword, @RequestParam String confirmPassword,
-			HttpSession session, RedirectAttributes redirectAttributes) {
+	public String processPasswordChange(@RequestParam("newPassword") String newPassword,
+			@RequestParam("newPasswordCheck") String confirmPassword, HttpSession session,
+			RedirectAttributes redirectAttributes) {
 
 		// 세션에서 이메일 가져오기
 		String userEmail = (String) session.getAttribute("verifiedEmail");
@@ -250,7 +246,7 @@ public class UserController {
 		});
 	}
 
-	// 아이디 마스킹 처리 (예: "te***t")
+	// 아이디 마스킹 처리
 	private String maskUserId(String userId) {
 		if (userId == null || userId.length() <= 3) {
 			return userId;

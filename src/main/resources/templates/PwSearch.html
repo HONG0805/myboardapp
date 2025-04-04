@@ -114,7 +114,7 @@ $(document).ready(function() {
 
 		<section class="sign_section">
 			<!-- 1단계: 사용자 정보 입력 -->
-			<div th:unless="${codeSent}">
+			<div id="initialForm">
 				<div class="signup">
 					<h2>비밀번호 찾기</h2>
 
@@ -138,8 +138,8 @@ $(document).ready(function() {
 				</div>
 			</div>
 
-			<!-- 2단계: 인증코드 입력 -->
-			<div th:if="${codeSent}">
+			<!-- 인증코드 입력 영역 -->
+			<div id="verificationSection" style="display: none;">
 				<div class="signup">
 					<h2>인증코드 입력</h2>
 

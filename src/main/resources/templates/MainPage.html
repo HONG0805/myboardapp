@@ -14,24 +14,24 @@
 		<section class="info_section">
 			<ul class="info_list">
 				<th:block th:if="${userID == null}">
-					<li><a th:href="@{/MainPage}"><img
+					<li><a th:href="@{/bbs/mainpage}"><img
 							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
 							style="width: 30px;" alt="찜목록">메인홈</a></li>
-					<li><a th:href="@{/Login}"><img
+					<li><a th:href="@{/user/login}"><img
 							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
 							style="width: 30px;" alt="내정보">내정보</a></li>
-					<li><a th:href="@{/Login}"><img
+					<li><a th:href="@{/user/login}"><img
 							th:src="@{/images/s_images/free-icon-font-comments-5074600.png}"
 							style="width: 30px;" alt="로그인">로그인</a></li>
 				</th:block>
 				<th:block th:if="${userID != null}">
-					<li><a th:href="@{/jjimBbs}"><img
+					<li><a th:href="@{/bbs/jjimBbs}"><img
 							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
 							style="width: 30px;" alt="찜목록">찜목록</a></li>
-					<li><a th:href="@{/MyPage}"><img
+					<li><a th:href="@{/bbs/MyPage}"><img
 							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
 							style="width: 30px;" alt="내정보">내정보</a></li>
-					<li><a th:href="@{/Logout}"><img
+					<li><a th:href="@{/user/logout}"><img
 							th:src="@{/images/s_images/free-icon-font-comments-5074600.png}"
 							style="width: 30px;" alt="로그아웃">로그아웃</a></li>
 				</th:block>
@@ -40,7 +40,7 @@
 
 		<header class="header">
 			<h1 class="logo">
-				<a th:href="@{/MainPage}"><img
+				<a th:href="@{/bbs/mainpage}"><img
 					th:src="@{/images/s_images/마크.png}" style="width: 98px;" alt="로고">
 					<span id="logo_1">강남대학교</span> 중고장터</a>
 			</h1>
@@ -52,11 +52,11 @@
 					<h2>로그인 후 이용가능 합니다.</h2>
 					<div>
 						<input type="button" class="loginbtn" value="로그인"
-							th:onclick="location.href='@{/Login}'">
+							th:onclick="location.href='@{/user/login}'">
 					</div>
 					<div>
 						<input type="button" class="loginbtn" value="회원가입"
-							th:onclick="location.href='@{/SignUp}'">
+							th:onclick="location.href='@{/user/SignUp}'">
 					</div>
 				</div>
 			</section>
@@ -65,7 +65,7 @@
 		<th:block th:if="${userID != null}">
 			<section class="content_search">
 				<div class="content_row_2">
-					<form class="search" method="post" th:action="@{/searchedBbs}">
+					<form class="search" method="get" th:action="@{/bbs/mainpage}">
 						<input type="text" name="searchWord" placeholder="검색어를 입력해주세요."
 							class="text" th:value="${searchWord}">
 						<button type="submit" class="search_check">
@@ -78,14 +78,16 @@
 
 			<section class="content_section">
 				<div class="content_article">
-					<a th:href="@{/Board}" id="writeArticleButton">새글을 작성해주세요.<img
-						th:src="@{/images/s_images/pen-nib-line.png}" class="writeimg"></a>
+					<a th:href="@{/bbs/write}" id="writeArticleButton">새글을 작성해주세요.
+						<img th:src="@{/images/s_images/pen-nib-line.png}"
+						class="writeimg">
+					</a>
 				</div>
 
 				<th:block th:each="bbs : ${bbsList}">
 					<div style="border: 1px solid #dddddd">
 						<div class="comment">
-							<a th:href="@{/view/pages/view(bbsID=${bbs.bbsID})}">
+							<a th:href="@{'/bbs/view/' + ${bbs.bbsID}}">
 								<div class="bbstitle" th:text="${bbs.bbsTitle}"></div>
 								<div class="bbscontent">
 									<span th:text="${bbs.bbsContent}"></span>
@@ -106,14 +108,14 @@
 
 			<footer class="pagination_footer">
 				<div class="pagination">
-					<th:block th:if="${pageNumber > 1}">
+					<th:block th:if="${currentPage > 1}">
 						<a
-							th:href="@{/MainPage(pageNumber=${pageNumber - 1}, searchWord=${searchWord})}"
+							th:href="@{/bbs/mainpage(pageNumber=${currentPage - 1}, searchWord=${searchWord})}"
 							class="prev">이전</a>
 					</th:block>
-					<th:block th:if="${#lists.size(bbsList) > 0}">
+					<th:block th:if="${currentPage < totalPages}">
 						<a
-							th:href="@{/MainPage(pageNumber=${pageNumber + 1}, searchWord=${searchWord})}"
+							th:href="@{/bbs/mainpage(pageNumber=${currentPage + 1}, searchWord=${searchWord})}"
 							class="next">다음</a>
 					</th:block>
 				</div>

@@ -35,17 +35,17 @@
 </script>
 </head>
 <body>
-	<form th:action="@@{/user/changePassword}" method="post"
+	<form th:action="@{/user/changePassword}" method="post"
 		onsubmit="return validate()">
 		<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
 		<div id="wrap">
 			<header class="header">
 				<h1>
-					<a th:href="@{/main}">Kangnam University</a>
+					<a th:href="@{/user/login}">Kangnam University</a>
 				</h1>
 				<div>
 					<h3>
-						<a th:href="@{/main}">중고장터</a>
+						<a th:href="@{/user/login}">중고장터</a>
 					</h3>
 				</div>
 			</header>
@@ -59,11 +59,11 @@
 							특문이 2종류 이상 조합된 8~20자</span>
 					</div>
 					<div>
-						<input type="password" id="new_pw" name="newPw"
+						<input type="password" id="new_pw" name="newPassword"
 							placeholder="새 비밀번호" class="input_text" required />
 					</div>
 					<div>
-						<input type="password" id="new_pwck" name="newPwCheck"
+						<input type="password" id="new_pwck" name="newPasswordCheck"
 							placeholder="새 비밀번호 확인" class="input_text" required />
 					</div>
 

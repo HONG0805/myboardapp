@@ -23,62 +23,54 @@
         var userEmail = $("#userEmail").val().trim();
         var userName = $("#userName").val().trim();
 
-        // 정규 표현식
-        var idReg = /^[a-z0-9]{4,20}$/; // 아이디: 4~20자의 영문 소문자와 숫자
-        var pwReg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|-]).{8,20}$/; // 비밀번호: 8~20자 영문, 숫자, 특수문자 포함
-        var emailReg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/; // 이메일 형식
-        var nameReg = /^[가-힝a-zA-Z]{2,30}$/; // 이름: 2~30자의 한글 또는 영문
+        var idReg = /^[a-z0-9]{4,20}$/;
+        var pwReg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|-]).{8,20}$/;
+        var emailReg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+        var nameReg = /^[가-힝a-zA-Z]{2,30}$/;
 
-        // 아이디 유효성 검사
         if (!idReg.test(userID)) {
             alert("아이디는 4~20자의 영문 소문자와 숫자만 가능합니다.");
             return false;
         }
 
-        // 비밀번호 유효성 검사
         if (!pwReg.test(userPassword)) {
             alert("비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.");
             return false;
         }
 
-        // 비밀번호 확인
         if (userPassword !== userPasswordCheck) {
             alert("비밀번호가 일치하지 않습니다.");
             return false;
         }
 
-        // 이메일 유효성 검사
         if (!emailReg.test(userEmail)) {
             alert("올바른 이메일 형식을 입력하세요.");
             return false;
         }
 
-        // 이름 유효성 검사
         if (!nameReg.test(userName)) {
             alert("이름은 2~30자의 한글 또는 영문만 입력 가능합니다.");
             return false;
         }
 
-        // 모든 검증을 통과하면 true 반환 (폼 제출)
+        console.log("폼 제출됨");
         return true;
     }
 
-    // 아이디 중복 체크 함수
     function checkID() {
         let userID = $("#userID").val().trim();
-        
+
         if (userID.length < 4 || userID.length > 20) {
             alert("아이디는 4~20자로 입력해야 합니다.");
             return;
         }
 
-        // 아이디 중복 체크 AJAX 요청
         $.ajax({
             type: "GET",
             url: "/user/checkID",
             data: { userID: userID },
             success: function(response) {
-                alert(response); // 서버로부터의 응답 메시지 표시
+                alert(response);
             },
             error: function(xhr) {
                 alert("아이디 중복 확인 중 오류가 발생했습니다.");
@@ -86,13 +78,12 @@
         });
     }
 
-    // 비밀번호 보기/숨기기 토글 함수
     function togglePassword(id) {
         let input = document.getElementById(id);
         if (input.type === "password") {
-            input.type = "text"; // 비밀번호 보이게 설정
+            input.type = "text";
         } else {
-            input.type = "password"; // 비밀번호 숨기기 설정
+            input.type = "password";
         }
     }
 </script>
@@ -117,6 +108,11 @@
 					<input type="hidden" th:name="${_csrf.parameterName}"
 						th:value="${_csrf.token}" />
 					<h2>회원가입</h2>
+					
+					<div th:if="${error}" class="alert"
+						style="color: red; margin-bottom: 10px;" th:text="${error}"></div>
+					<div th:if="${message}" class="alert"
+						style="color: green; margin-bottom: 10px;" th:text="${message}"></div>
 
 					<div class="text">아이디</div>
 					<div>

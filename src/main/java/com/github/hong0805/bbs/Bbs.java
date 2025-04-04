@@ -1,10 +1,16 @@
 package com.github.hong0805.bbs;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import lombok.Data;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
+@Data
 @Entity
 public class Bbs {
 	@Id
@@ -12,19 +18,20 @@ public class Bbs {
 	private int bbsID;
 	private String bbsTitle;
 	private String userID;
-	private String bbsDate;
+	private LocalDateTime bbsDate;
 	private String bbsContent;
-	private int bbsAvailable;
+	private boolean bbsAvailable;
 	private int cost;
 	private String bbsImage;
-	
-    // 기본 생성자
-    public Bbs() {}
 
-    // bbsID로만 생성할 수 있는 생성자
-    public Bbs(int bbsID) {
-        this.bbsID = bbsID;
-    }
+	// 기본 생성자
+	public Bbs() {
+	}
+
+	// bbsID로만 생성할 수 있는 생성자
+	public Bbs(int bbsID) {
+		this.bbsID = bbsID;
+	}
 
 	public int getBbsID() {
 		return bbsID;
@@ -50,11 +57,11 @@ public class Bbs {
 		this.userID = userID;
 	}
 
-	public String getBbsDate() {
+	public LocalDateTime getBbsDate() {
 		return bbsDate;
 	}
 
-	public void setBbsDate(String bbsDate) {
+	public void setBbsDate(LocalDateTime bbsDate) {
 		this.bbsDate = bbsDate;
 	}
 
@@ -66,11 +73,11 @@ public class Bbs {
 		this.bbsContent = bbsContent;
 	}
 
-	public int getBbsAvailable() {
+	public boolean getBbsAvailable() {
 		return bbsAvailable;
 	}
 
-	public void setBbsAvailable(int bbsAvailable) {
+	public void setBbsAvailable(boolean bbsAvailable) {
 		this.bbsAvailable = bbsAvailable;
 	}
 
