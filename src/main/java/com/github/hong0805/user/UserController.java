@@ -38,21 +38,19 @@ public class UserController {
 	public String loginPage() {
 		return "Login";
 	}
-	
+
 	// 로그인
 	@PostMapping("/login")
-	public String login(@RequestParam String userID, 
-	                   @RequestParam String userPassword,
-	                   HttpSession session,
-	                   RedirectAttributes redirectAttributes) {
-	    
-	    if (userService.login(userID, userPassword)) {
-	        session.setAttribute("userID", userID);
-	        return "redirect:/bbs/mainpage";
-	    } else {
-	        redirectAttributes.addFlashAttribute("error", "로그인 실패");
-	        return "redirect:/user/login";
-	    }
+	public String login(@RequestParam String userID, @RequestParam String userPassword, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+
+		if (userService.login(userID, userPassword)) {
+			session.setAttribute("userID", userID);
+			return "redirect:/bbs/mainpage";
+		} else {
+			redirectAttributes.addFlashAttribute("error", "로그인 실패");
+			return "redirect:/user/login";
+		}
 	}
 
 	// 회원가입 페이지 요청

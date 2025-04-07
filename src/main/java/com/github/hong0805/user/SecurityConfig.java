@@ -17,19 +17,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().and().authorizeRequests()
-				.antMatchers("/user/sendVerificationCode", "/user/login", "/user/register", "/bbs/mainpage", "/css/**",
-						"/js/**", "/images/**")
-				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/user/login")
-				.loginProcessingUrl("/user/login").usernameParameter("userID").passwordParameter("userPassword")
-				.defaultSuccessUrl("/bbs/mainpage", true).failureUrl("/user/login?error=true");
-	}
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .csrf().and()
+            .authorizeRequests()
+                .antMatchers("/user/**").permitAll() 
+                .antMatchers("/css/**", "/js/**", "/images/**").permitAll() 
+                .antMatchers("/bbs/**").authenticated()
+                .anyRequest().authenticated()
+            .and()
+            .formLogin()
+                .loginPage("/user/login")
+                .usernameParameter("userID")
+                .passwordParameter("userPassword")
+                .defaultSuccessUrl("/bbs/mainpgae", true)
+                .failureUrl("/user/login?error=true")
+            .and()
+            .logout()
+                .logoutSuccessUrl("/user/login")
+                .invalidateHttpSession(true);
+    }
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder()); // ⬅️ 이 부분 추가!
+		auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
 	}
 
 	@Bean

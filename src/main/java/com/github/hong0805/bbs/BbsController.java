@@ -1,55 +1,53 @@
 package com.github.hong0805.bbs;
 
-import java.util.List;
-import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/bbs")
 public class BbsController {
 
+	private final BbsService bbsService;
+	private static final int DEFAULT_PAGE_SIZE = 10;
+
 	@Autowired
-	private BbsService bbsService;
+	public BbsController(BbsService bbsService) {
+		this.bbsService = bbsService;
+	}
 
-	// 게시판 메인 페이지 (페이징 처리)
+	@GetMapping({ "", "/" })
+	public String rootRedirect(HttpSession session) {
+		if (session.getAttribute("userID") == null) {
+			return "redirect:/user/login";
+		}
+		return "redirect:/bbs/mainpage";
+	}
+
+	// 게시판 메인 페이지
 	@GetMapping("/mainpage")
-	public String mainPage(Model model, @RequestParam(defaultValue = "1") int pageNumber,
-			@RequestParam(required = false) String searchWord, HttpSession session) {
+	public String mainPage(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(required = false) String searchWord, HttpSession session, Model model) {
 
-		// 세션에서 사용자 ID 확인
 		String userID = (String) session.getAttribute("userID");
 		if (userID == null) {
 			return "redirect:/user/login";
 		}
+
+		Page<Bbs> bbsPage = bbsService.getBbsList(page, DEFAULT_PAGE_SIZE, searchWord);
+
 		model.addAttribute("userID", userID);
+		model.addAttribute("bbsList", bbsPage.getContent());
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", bbsPage.getTotalPages());
+		model.addAttribute("searchWord", searchWord);
 
-		// 페이징 설정
-		int pageSize = 10;
-		int offset = (pageNumber - 1) * pageSize;
-
-		// 검색 여부에 따라 데이터 조회
-		List<Bbs> bbsList;
-		if (searchWord != null && !searchWord.trim().isEmpty()) {
-			bbsList = bbsService.searchBbs(searchWord, pageSize, offset);
-			model.addAttribute("searchWord", searchWord);
-		} else {
-			bbsList = bbsService.getAllBbs(pageSize, offset);
-		}
-
-		// 총 게시물 수 계산 (추가 구현 필요)
-		int totalCount = bbsService.getTotalCount(searchWord);
-		int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-
-		// 모델에 데이터 추가
-		model.addAttribute("bbsList", bbsList);
-		model.addAttribute("currentPage", pageNumber);
-		model.addAttribute("totalPages", totalPages);
-
-		return "MainPage"; 
+		return "MainPage";
 	}
 
 	// 게시글 상세 보기
@@ -57,10 +55,10 @@ public class BbsController {
 	public String viewBbs(@PathVariable("id") int bbsID, Model model) {
 		Bbs bbs = bbsService.getBbsById(bbsID);
 		if (bbs == null) {
-			return "redirect:/bbs/mainpage"; 
+			return "redirect:/bbs/mainpage";
 		}
 		model.addAttribute("bbs", bbs);
-		return "bbs/view"; 
+		return "view";
 	}
 
 	// 글쓰기 폼
@@ -72,9 +70,9 @@ public class BbsController {
 		}
 
 		Bbs bbs = new Bbs();
-		bbs.setUserID(userID); 
+		bbs.setUserID(userID);
 		model.addAttribute("bbs", bbs);
-		return "bbs/Board"; 
+		return "Board";
 	}
 
 	// 글쓰기 처리
@@ -100,13 +98,12 @@ public class BbsController {
 		String userID = (String) session.getAttribute("userID");
 		Bbs bbs = bbsService.getBbsById(bbsID);
 
-		// 권한 확인: 작성자만 수정 가능
 		if (bbs == null || !bbs.getUserID().equals(userID)) {
 			return "redirect:/bbs/mainpage";
 		}
 
 		model.addAttribute("bbs", bbs);
-		return "bbs/update";
+		return "update";
 	}
 
 	// 글 수정 처리
@@ -117,14 +114,15 @@ public class BbsController {
 		String userID = (String) session.getAttribute("userID");
 		Bbs existingBbs = bbsService.getBbsById(bbsID);
 
-		// 권한 확인
 		if (existingBbs == null || !existingBbs.getUserID().equals(userID)) {
 			return "redirect:/bbs/mainpage";
 		}
 
-		// 기존 데이터 업데이트
 		existingBbs.setBbsTitle(updatedBbs.getBbsTitle());
 		existingBbs.setBbsContent(updatedBbs.getBbsContent());
+		existingBbs.setBbsImage(updatedBbs.getBbsImage());
+		existingBbs.setCost(updatedBbs.getCost());
+
 		bbsService.saveBbs(existingBbs);
 
 		redirectAttributes.addFlashAttribute("message", "글이 수정되었습니다.");
@@ -138,7 +136,6 @@ public class BbsController {
 		String userID = (String) session.getAttribute("userID");
 		Bbs bbs = bbsService.getBbsById(bbsID);
 
-		// 권한 확인
 		if (bbs == null || !bbs.getUserID().equals(userID)) {
 			return "redirect:/bbs/mainpage";
 		}

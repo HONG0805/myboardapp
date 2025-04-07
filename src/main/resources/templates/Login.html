@@ -30,8 +30,8 @@
 						th:value="${_csrf.token}" />
 
 					<div class="input_box">
-						<label for="user_id">아이디</label> <input type="text"
-							name="userID" id="user_id"
+						<label for="user_id">아이디</label> <input type="text" name="userID"
+							id="user_id"
 							th:classappend="${error != null} ? 'error-input' : ''"
 							placeholder="아이디를 입력해주세요." required>
 					</div>
@@ -44,9 +44,9 @@
 
 					<!-- 에러 메시지 표시 -->
 					<div th:if="${param.error}" class="error-message">
-						<span
-							th:text="${session.SPRING_SECURITY_LAST_EXCEPTION?.message} ?: '잘못된 아이디 또는 비밀번호입니다.'"></span>
+						<span>아이디 또는 비밀번호가 올바르지 않습니다.</span>
 					</div>
+
 
 					<div>
 						<button type="submit" id="loginbtn" class="btn_login">로그인</button>
@@ -54,7 +54,6 @@
 				</form>
 			</section>
 
-			<!-- 추가 링크 섹션 (UserController 매핑과 일치) -->
 			<section class="login_section_1">
 				<div class="link_div">
 					<a th:href="@{/user/findId}"> 아이디 찾기 </a>
@@ -71,7 +70,7 @@
 		<!-- 이미 로그인된 경우 -->
 		<div sec:authorize="isAuthenticated()">
 			<script th:inline="javascript">
-				window.location.href = /*[[@{/bbs/}]]*/'/bbs/'; // 메인 페이지로 리다이렉트
+				window.location.href = /*[[@{/bbs/mainpage}]]*/'/bbs/mainpage';
 			</script>
 		</div>
 	</div>

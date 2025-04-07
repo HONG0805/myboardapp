@@ -1,23 +1,32 @@
 package com.github.hong0805.jjim;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "jjim")
+@IdClass(Jjim.JjimId.class)
 public class Jjim {
 
 	@Id
-	private int bbsID;
+	@Column(nullable = false)
 	private String userID;
 
-	// getters and setters
-	public int getBbsID() {
-		return bbsID;
+	@Id
+	@Column(nullable = false)
+	private int bbsID;
+
+	// 복합 키를 위한 내부 클래스
+	public static class JjimId implements Serializable {
+		private String userID;
+		private int bbsID;
 	}
 
-	public void setBbsID(int bbsID) {
+	public Jjim() {
+	}
+
+	public Jjim(String userID, int bbsID) {
+		this.userID = userID;
 		this.bbsID = bbsID;
 	}
 
@@ -27,5 +36,13 @@ public class Jjim {
 
 	public void setUserID(String userID) {
 		this.userID = userID;
+	}
+
+	public int getBbsID() {
+		return bbsID;
+	}
+
+	public void setBbsID(int bbsID) {
+		this.bbsID = bbsID;
 	}
 }

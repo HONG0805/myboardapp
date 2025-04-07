@@ -1,58 +1,75 @@
 package com.github.hong0805.jjim;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.github.hong0805.bbs.Bbs;
 import com.github.hong0805.bbs.BbsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class JjimService {
 
-	@Autowired
-	private JjimRepository jjimRepository;
+	private static final int PAGE_SIZE = 10;
+
+	private final JjimRepository jjimRepository;
+	private final BbsRepository bbsRepository;
 
 	@Autowired
-	private BbsRepository bbsRepository; // 게시글 조회를 위해 BbsRepository를 사용
-
-	// 찜 리스트 조회
-	public List<Bbs> getList(String userID, int pageNumber) {
-		List<Bbs> bbsList = bbsRepository.findJjimListByUserID(userID, (pageNumber - 1) * 10, 10);
-		return bbsList;
+	public JjimService(JjimRepository jjimRepository, BbsRepository bbsRepository) {
+		this.jjimRepository = jjimRepository;
+		this.bbsRepository = bbsRepository;
 	}
 
-	// 찜 추가
-	public String addJjim(String userID, int bbsID) {
+	public Page<Bbs> getJjimList(String userID, int pageNumber) {
+		PageRequest pageRequest = PageRequest.of(pageNumber - 1, PAGE_SIZE);
+
+		Page<Jjim> jjimPage = jjimRepository.findByUserID(userID, pageRequest);
+
+		List<Bbs> bbsList = jjimPage.getContent().stream().map(jjim -> bbsRepository.findById(jjim.getBbsID()))
+				.filter(Optional::isPresent).map(Optional::get).filter(bbs -> bbs.isBbsAvailable()) 
+				.collect(Collectors.toList());
+
+		return new PageImpl<>(bbsList, pageRequest, jjimPage.getTotalElements());
+	}
+
+	@Transactional
+	public void addJjim(String userID, int bbsID) {
 		if (jjimRepository.existsByUserIDAndBbsID(userID, bbsID)) {
-			return "이미 찜한 게시물입니다.";
+			throw new IllegalStateException("이미 찜한 게시물입니다.");
 		}
-		Jjim jjim = new Jjim();
-		jjim.setUserID(userID);
-		jjim.setBbsID(bbsID);
+
+		Bbs bbs = bbsRepository.findById(bbsID).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+
+		if (!bbs.isBbsAvailable()) {
+			throw new IllegalArgumentException("삭제된 게시물입니다.");
+		}
+
+		Jjim jjim = new Jjim(userID, bbsID);
 		jjimRepository.save(jjim);
-		return "찜 추가 성공!";
 	}
 
-	// 찜 삭제
-	public String deleteJjim(String userID, int bbsID) {
+	@Transactional
+	public void deleteJjim(String userID, int bbsID) {
 		if (!jjimRepository.existsByUserIDAndBbsID(userID, bbsID)) {
-			return "찜한 게시물이 아닙니다.";
+			throw new IllegalArgumentException("찜한 기록이 없습니다.");
 		}
 		jjimRepository.deleteByUserIDAndBbsID(userID, bbsID);
-		return "찜 삭제 성공!";
 	}
 
-	// 사용자별 찜 게시물 수 조회
-	public int getTotalCount(String userID) {
-		return jjimRepository.findByUserID(userID).size();
+	public long getTotalCount(String userID) {
+		return jjimRepository.countByUserID(userID);
 	}
 
-	// 다음 페이지 여부 확인
 	public boolean hasNextPage(String userID, int pageNumber) {
-		int totalCount = getTotalCount(userID);
-		int pageSize = 10;
-		return totalCount > pageNumber * pageSize;
+		long totalCount = getTotalCount(userID);
+		return totalCount > (long) pageNumber * PAGE_SIZE;
 	}
 }
