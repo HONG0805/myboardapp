@@ -10,135 +10,175 @@
 <link rel="shortcut icon" th:href="@{/images/favicon/favicon.ico}">
 <link rel="apple-touch-icon-precomposed"
 	th:href="@{/images/favicon/flat-design-touch.png}">
-
 <script src="https://kit.fontawesome.com/e1bd1cb2a5.js"></script>
-<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-    // 회원가입 폼 검증 함수
-    function registerUser() {
-        var userID = $("#userID").val().trim();
-        var userPassword = $("#userPassword").val().trim();
-        var userPasswordCheck = $("#userPasswordCheck").val().trim();
-        var userEmail = $("#userEmail").val().trim();
-        var userName = $("#userName").val().trim();
+        // 중복 확인 플래그
+        let isIdChecked = false;
 
-        var idReg = /^[a-z0-9]{4,20}$/;
-        var pwReg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|-]).{8,20}$/;
-        var emailReg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-        var nameReg = /^[가-힝a-zA-Z]{2,30}$/;
+        // 회원가입 유효성 검사
+        function validateForm() {
+            const userID = $("#userID").val().trim();
+            const userPassword = $("#userPassword").val().trim();
+            const userPasswordCheck = $("#userPasswordCheck").val().trim();
+            const userEmail = $("#userEmail").val().trim();
+            const userName = $("#userName").val().trim();
 
-        if (!idReg.test(userID)) {
-            alert("아이디는 4~20자의 영문 소문자와 숫자만 가능합니다.");
-            return false;
-        }
-
-        if (!pwReg.test(userPassword)) {
-            alert("비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.");
-            return false;
-        }
-
-        if (userPassword !== userPasswordCheck) {
-            alert("비밀번호가 일치하지 않습니다.");
-            return false;
-        }
-
-        if (!emailReg.test(userEmail)) {
-            alert("올바른 이메일 형식을 입력하세요.");
-            return false;
-        }
-
-        if (!nameReg.test(userName)) {
-            alert("이름은 2~30자의 한글 또는 영문만 입력 가능합니다.");
-            return false;
-        }
-
-        console.log("폼 제출됨");
-        return true;
-    }
-
-    function checkID() {
-        let userID = $("#userID").val().trim();
-
-        if (userID.length < 4 || userID.length > 20) {
-            alert("아이디는 4~20자로 입력해야 합니다.");
-            return;
-        }
-
-        $.ajax({
-            type: "GET",
-            url: "/user/checkID",
-            data: { userID: userID },
-            success: function(response) {
-                alert(response);
-            },
-            error: function(xhr) {
-                alert("아이디 중복 확인 중 오류가 발생했습니다.");
+            // 아이디 중복 확인 체크
+            if (!isIdChecked) {
+                alert("아이디 중복 확인을 완료해주세요.");
+                return false;
             }
-        });
-    }
 
-    function togglePassword(id) {
-        let input = document.getElementById(id);
-        if (input.type === "password") {
-            input.type = "text";
-        } else {
-            input.type = "password";
+            // 비밀번호 일치 확인
+            if (userPassword !== userPasswordCheck) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return false;
+            }
+
+            return true;
         }
-    }
-</script>
+
+        // 아이디 중복 확인
+        function checkID() {
+            const userID = $("#userID").val().trim();
+
+            // 기본 유효성 검사
+            if (userID.length < 4 || userID.length > 20) {
+                alert("아이디는 4~20자로 입력해야 합니다.");
+                return;
+            }
+
+            // 정규식 검사: 영문 소문자 + 숫자
+            if (!/^[a-z0-9]{4,20}$/.test(userID)) {
+                alert("아이디는 영문 소문자와 숫자만 사용할 수 있습니다.");
+                return;
+            }
+
+            // AJAX 요청
+            $.ajax({
+                type: "GET",
+                url: "/api/auth/check-id",
+                data: { userID: userID },
+                success: function(response) {
+                    if (response.exists) {
+                        alert("이미 사용 중인 아이디입니다.");
+                        $("#userID").val("").focus();
+                        isIdChecked = false;
+                    } else {
+                        alert("사용 가능한 아이디입니다.");
+                        isIdChecked = true;
+                    }
+                },
+                error: function(xhr) {
+                    console.error("Error:", xhr.responseText);
+                    alert("아이디 중복 확인 중 오류가 발생했습니다.");
+                    isIdChecked = false;
+                }
+            });
+        }
+
+        // 비밀번호 보기/숨기기
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        // 회원가입 제출
+        $(document).ready(function() {
+            $("#registerForm").submit(function(e) {
+                e.preventDefault();
+
+                if (!validateForm()) return;
+
+                const formData = {
+                    userID: $("#userID").val().trim(),
+                    userPassword: $("#userPassword").val().trim(),
+                    userEmail: $("#userEmail").val().trim(),
+                    userName: $("#userName").val().trim()
+                };
+
+                $.ajax({
+                    url: "/api/auth/register",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        if (response.success) {
+                            alert("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+                            window.location.href = "/auth/login";
+                        } else {
+                            alert(response.message || "회원가입에 실패했습니다.");
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMsg = xhr.responseJSON?.message || "회원가입 중 오류가 발생했습니다.";
+                        alert(errorMsg);
+                        console.error("Error:", xhr.responseText);
+                    }
+                });
+            });
+
+            // 아이디 변경 시 중복 확인 초기화
+            $("#userID").on("input", function() {
+                isIdChecked = false;
+            });
+        });
+    </script>
 </head>
 <body>
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a th:href="@{/user/login}">Kangnam University</a>
+				<a th:href="@{/auth/login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a th:href="@{/user/login}">중고장터</a>
+					<a th:href="@{/auth/login}">중고장터</a>
 				</h3>
 			</div>
 		</header>
 
 		<section class="sign_section">
 			<div class="signup">
-				<form th:action="@{/user/register}" method="post"
-					onsubmit="return registerUser()">
-					<input type="hidden" th:name="${_csrf.parameterName}"
-						th:value="${_csrf.token}" />
+				<form id="registerForm">
 					<h2>회원가입</h2>
-					
-					<div th:if="${error}" class="alert"
-						style="color: red; margin-bottom: 10px;" th:text="${error}"></div>
-					<div th:if="${message}" class="alert"
-						style="color: green; margin-bottom: 10px;" th:text="${message}"></div>
+
+					<!-- 서버 측 오류 메시지 -->
+					<div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+					<div th:if="${message}" class="alert alert-success"
+						th:text="${message}"></div>
 
 					<div class="text">아이디</div>
-					<div>
+					<div class="input-group">
 						<input type="text" id="userID" name="userID"
-							placeholder="아이디 (4~20자)" class="input_text" maxlength="20"
-							required>
-						<button type="button" onclick="checkID()">중복 확인</button>
+							placeholder="아이디 (4~20자, 영문 소문자+숫자)" class="input_text"
+							maxlength="20" required>
+						<button type="button" class="btn-check" onclick="checkID()">중복
+							확인</button>
 					</div>
 
 					<div class="text">
-						비밀번호 <span style="font-size: 10px;">(8~20자, 대소문자,숫자,특수문자
-							포함)</span>
+						비밀번호 <small>(8~20자, 영문+숫자+특수문자 포함)</small>
 					</div>
-					<div>
+					<div class="input-group">
 						<input type="password" id="userPassword" name="userPassword"
-							placeholder="비밀번호" class="input_text" maxlength="20" required>
-						<button type="button" onclick="togglePassword('userPassword')">👁️</button>
+							placeholder="비밀번호 입력" class="input_text" maxlength="20" required>
+						<button type="button" class="btn-toggle"
+							onclick="togglePassword('userPassword')">
+							<i class="fas fa-eye"></i>
+						</button>
 					</div>
 
 					<div class="text">비밀번호 확인</div>
-					<div>
+					<div class="input-group">
 						<input type="password" id="userPasswordCheck"
-							name="userPasswordCheck" placeholder="비밀번호 확인" class="input_text"
-							maxlength="20" required>
-						<button type="button"
-							onclick="togglePassword('userPasswordCheck')">👁️</button>
+							name="userPasswordCheck" placeholder="비밀번호 다시 입력"
+							class="input_text" maxlength="20" required>
+						<button type="button" class="btn-toggle"
+							onclick="togglePassword('userPasswordCheck')">
+							<i class="fas fa-eye"></i>
+						</button>
 					</div>
 
 					<div class="text">이메일</div>
@@ -151,12 +191,12 @@
 					<div class="text">이름</div>
 					<div>
 						<input type="text" id="userName" name="userName"
-							placeholder="이름 (2~30자)" class="input_text" maxlength="30"
+							placeholder="이름 (2~30자, 한글/영문)" class="input_text" maxlength="30"
 							required>
 					</div>
 
-					<div class="signbtn">
-						<button type="submit" class="bt_signup">회원가입</button>
+					<div class="form-footer">
+						<button type="submit" class="btn-submit">회원가입</button>
 					</div>
 				</form>
 			</div>

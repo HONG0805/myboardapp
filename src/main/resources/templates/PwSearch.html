@@ -1,8 +1,6 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-<meta name="_csrf" th:content="${_csrf.token}" />
-<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
@@ -15,10 +13,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    // CSRF 토큰 변수에 저장 (페이지 로드 시 한 번만 읽음)
-    const csrfToken = $('meta[name="_csrf"]').attr('content');
-    const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
-
     // 입력 필드 유효성 검사
     $('input[name="userName"], input[name="userID"], input[name="userEmail"]').on('input', function() {
         const allFilled = $('#userName').val().trim() && 
@@ -31,40 +25,35 @@ $(document).ready(function() {
 
     // 인증코드 전송
     $('#sendCodeBtn').click(function() {
-    const userName = $('#userName').val().trim();
-    const userID = $('#userID').val().trim();
-    const userEmail = $('#userEmail').val().trim();
-    
-    if (!userName || !userID || !userEmail) {
-        alert('모든 정보를 입력해주세요.');
-        return;
-    }
-
-    $.ajax({
-        url: '/user/sendVerificationCode',
-        type: 'POST',
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader(csrfHeader, csrfToken);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-        },
-        data: JSON.stringify({ 
-            userName: userName,
-            userID: userID,
-            userEmail: userEmail
-        }),
-        success: function(response) {
-            alert('인증코드가 발송되었습니다.');
-            $('#initialForm').hide(); // 초기 입력 폼 숨기기
-            $('#verificationSection').show(); // 인증코드 입력 섹션 표시
-            $('#userEmail').prop('readonly', true); // 이메일 수정 방지
-        },
-        error: function(xhr) {
-            // 서버가 JSON을 반환하지 않으면 xhr.responseText를 사용하여 오류 메시지 출력
-            alert(xhr.responseJSON ? xhr.responseJSON.message : (xhr.responseText || '오류가 발생했습니다.'));
+        const userName = $('#userName').val().trim();
+        const userID = $('#userID').val().trim();
+        const userEmail = $('#userEmail').val().trim();
+        
+        if (!userName || !userID || !userEmail) {
+            alert('모든 정보를 입력해주세요.');
+            return;
         }
-    });
-});
 
+        $.ajax({
+            url: '/api/auth/send-verification-code',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ 
+                userName: userName,
+                userID: userID,
+                userEmail: userEmail
+            }),
+            success: function(response) {
+                alert('인증코드가 발송되었습니다.');
+                $('#initialForm').hide();
+                $('#verificationSection').show();
+                $('#userEmail').prop('readonly', true);
+            },
+            error: function(xhr) {
+                alert(xhr.responseJSON ? xhr.responseJSON.message : (xhr.responseText || '오류가 발생했습니다.'));
+            }
+        });
+    });
 
     // 인증코드 확인
     $('#verifyCodeBtn').click(function() {
@@ -77,18 +66,19 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '/user/verifyCode',
+            url: '/api/auth/verify-code',
             type: 'POST',
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader(csrfHeader, csrfToken);
-            },
+            contentType: 'application/json',
             data: JSON.stringify({
                 userEmail: userEmail,
                 code: code
             }),
-            contentType: 'application/json',
             success: function(response) {
-                window.location.href = '/user/changePassword?email=' + encodeURIComponent(userEmail);
+                if (response.result) {
+                    window.location.href = '/auth/change-password?email=' + encodeURIComponent(userEmail);
+                } else {
+                    alert('인증코드가 일치하지 않습니다.');
+                }
             },
             error: function(xhr) {
                 alert(xhr.responseJSON?.message || '인증 실패');
@@ -103,11 +93,11 @@ $(document).ready(function() {
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a th:href="@{/user/login}">Kangnam University</a>
+				<a th:href="@{/auth/login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a th:href="@{/user/login}">중고장터</a>
+					<a th:href="@{/auth/login}">중고장터</a>
 				</h3>
 			</div>
 		</header>

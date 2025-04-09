@@ -5,10 +5,9 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 <title>비밀번호 변경</title>
-<!-- 수정된 CSS 경로 -->
 <link rel="stylesheet" th:href="@{/css/ChangePW_1.css}">
 <link rel="stylesheet" th:href="@{/css/reset.css}">
-<script th:src="@{/static/js/jquery.min.js}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
 	function validate() {
 		var newPW = document.getElementById("new_pw");
@@ -32,46 +31,69 @@
 		}
 		return true;
 	}
+	
+	$(document).ready(function() {
+	    $('#btnChangePw').click(function(e) {
+	        e.preventDefault();
+
+	        if (!validate()) return;
+
+	        const newPassword = $('#new_pw').val();
+	        const userEmail = $('input[name="userEmail"]').val();
+
+	        $.ajax({
+	            url: '/api/auth/reset-password',
+	            type: 'POST',
+	            contentType: 'application/json',
+	            data: JSON.stringify({
+	                userEmail: userEmail,
+	                newPassword: newPassword
+	            }),
+	            success: function(response) {
+	                alert("비밀번호가 변경되었습니다.");
+	                window.location.href = '/auth/login';
+	            },
+	            error: function(xhr) {
+	                alert(xhr.responseJSON?.message || "변경 실패");
+	            }
+	        });
+	    });
+	});
 </script>
 </head>
 <body>
-	<form th:action="@{/user/changePassword}" method="post"
-		onsubmit="return validate()">
-		<input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-		<div id="wrap">
-			<header class="header">
-				<h1>
-					<a th:href="@{/user/login}">Kangnam University</a>
-				</h1>
+	<div id="wrap">
+		<header class="header">
+			<h1>
+				<a th:href="@{/auth/login}">Kangnam University</a>
+			</h1>
+			<div>
+				<h3>
+					<a th:href="@{/auth/login}">중고장터</a>
+				</h3>
+			</div>
+		</header>
+
+		<section class="sign_section">
+			<div class="signup">
+				<h2>비밀번호 변경</h2>
+				<input type="hidden" name="userEmail" th:value="${param.email}" />
+				<div class="text">
+					<span style="font-size: 10px;">영문, 숫자, 특문이 2종류 이상 조합된 8~20자</span>
+				</div>
 				<div>
-					<h3>
-						<a th:href="@{/user/login}">중고장터</a>
-					</h3>
+					<input type="password" id="new_pw" name="newPassword"
+						placeholder="새 비밀번호" class="input_text" required />
 				</div>
-			</header>
-
-			<section class="sign_section">
-				<div class="signup">
-					<h2>비밀번호 변경</h2>
-					<input type="hidden" name="userID" th:value="${userID}">
-					<div class="text">
-						새 비밀번호&nbsp;&nbsp;<span style="font-size: 10px;">영문, 숫자,
-							특문이 2종류 이상 조합된 8~20자</span>
-					</div>
-					<div>
-						<input type="password" id="new_pw" name="newPassword"
-							placeholder="새 비밀번호" class="input_text" required />
-					</div>
-					<div>
-						<input type="password" id="new_pwck" name="newPasswordCheck"
-							placeholder="새 비밀번호 확인" class="input_text" required />
-					</div>
-
-					<input type="submit" id="btnChangePw" class="signbtn"
-						value="비밀번호 변경" />
+				<div>
+					<input type="password" id="new_pwck" name="newPasswordCheck"
+						placeholder="새 비밀번호 확인" class="input_text" required />
 				</div>
-			</section>
-		</div>
-	</form>
+
+				<input type="submit" id="btnChangePw" class="signbtn"
+					value="비밀번호 변경" />
+			</div>
+		</section>
+	</div>
 </body>
 </html>

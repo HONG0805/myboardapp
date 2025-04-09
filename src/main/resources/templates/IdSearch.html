@@ -60,8 +60,27 @@
 			return;
 		}
 
-		// 폼 제출
-		$('#idSearchForm').off('submit').submit();
+		// AJAX로 요청 전송
+		$.ajax({
+			url : '/api/auth/find-id',
+			type : 'POST',
+			contentType : 'application/json',
+			data : JSON.stringify({
+				userName : userName,
+				userEmail : userEmail
+			}),
+			success : function(response) {
+				if (response.userID) {
+					alert('회원님의 아이디는: ' + response.userID);
+					window.location.href = '/auth/login';
+				} else {
+					alert('일치하는 회원 정보가 없습니다.');
+				}
+			},
+			error : function(xhr) {
+				alert('아이디 찾기 중 오류가 발생했습니다.');
+			}
+		});
 	}
 </script>
 </head>
@@ -70,21 +89,17 @@
 	<div id="wrap">
 		<header class="header">
 			<h1>
-				<a th:href="@{/user/login}">Kangnam University</a>
+				<a th:href="@{/auth/login}">Kangnam University</a>
 			</h1>
 			<div>
 				<h3>
-					<a th:href="@{/user/login}">중고장터</a>
+					<a th:href="@{/auth/login}">중고장터</a>
 				</h3>
 			</div>
 		</header>
 
 		<section class="sign_section">
-			<form id="idSearchForm" name="idsearch" method="post"
-				th:action="@{/user/findId}">
-				<input type="hidden" th:name="${_csrf.parameterName}"
-					th:value="${_csrf.token}" />
-
+			<form id="idSearchForm">
 				<div class="signup">
 					<h2>아이디 찾기</h2>
 
@@ -95,16 +110,14 @@
 
 					<div class="text">이름</div>
 					<div>
-						<input type="text" id="name" name="userName"
-							placeholder="이름" class="input_text"
-							th:value="${userName}" required>
+						<input type="text" id="name" name="userName" placeholder="이름"
+							class="input_text" th:value="${userName}" required>
 					</div>
 
 					<div class="text">이메일</div>
 					<div>
-						<input type="email" id="email" name="userEmail"
-							placeholder="이메일" class="input_text"
-							th:value="${userEmail}" required>
+						<input type="email" id="email" name="userEmail" placeholder="이메일"
+							class="input_text" th:value="${userEmail}" required>
 					</div>
 
 					<div>

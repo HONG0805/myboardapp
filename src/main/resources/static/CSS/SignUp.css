@@ -75,7 +75,7 @@ input::placeholder {
 	box-sizing: border-box; 
 }
 
-.bt_signup {
+.btn-submit {
 	width: 100%;
 	background: #1289dd;
 	color: white;
