@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import com.github.hong0805.domain.User;
 import com.github.hong0805.repository.UserRepository;
 import com.github.hong0805.security.JwtTokenProvider;
-import com.github.hong0805.web.dto.*;
+import com.github.hong0805.web.dto.user.*;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -46,6 +48,7 @@ public class AuthService {
 	public String login(LoginRequest request) {
 		User user = userRepository.findByUserId(request.getUserId())
 				.orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+		log.info("로그인 시도: {}", request.getUserId());
 
 		if (!passwordEncoder.matches(request.getUserPassword(), user.getUserPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
@@ -74,11 +77,11 @@ public class AuthService {
 
 		return new ApiResponse(true, "인증코드가 발송되었습니다.");
 	}
-	
-    // 6자리 인증 코드 생성 (랜덤)
-    private String generate6DigitCode() {
-        return String.valueOf((int)((Math.random() * 900000) + 100000));
-    }
+
+	// 6자리 인증 코드 생성 (랜덤)
+	private String generate6DigitCode() {
+		return String.valueOf((int) ((Math.random() * 900000) + 100000));
+	}
 
 	// 인증 코드 확인
 	public boolean verifyCode(CodeVerificationRequest request) {
@@ -87,11 +90,11 @@ public class AuthService {
 
 	// 비밀번호 재설정
 	public ApiResponse resetPassword(ResetPasswordRequest request) {
-        User user = userRepository.findByUserEmail(request.getUserEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+		User user = userRepository.findByUserEmail(request.getUserEmail())
+				.orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
 
-        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(user);
-        return new ApiResponse(true, "비밀번호가 변경되었습니다.");
-    }
+		user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+		userRepository.save(user);
+		return new ApiResponse(true, "비밀번호가 변경되었습니다.");
+	}
 }

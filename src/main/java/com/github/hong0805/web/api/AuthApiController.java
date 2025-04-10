@@ -5,6 +5,17 @@ import org.springframework.web.bind.annotation.*;
 
 import com.github.hong0805.service.AuthService;
 import com.github.hong0805.web.dto.*;
+import com.github.hong0805.web.dto.user.ApiResponse;
+import com.github.hong0805.web.dto.user.CheckIdResponse;
+import com.github.hong0805.web.dto.user.CodeVerificationRequest;
+import com.github.hong0805.web.dto.user.FindIdRequest;
+import com.github.hong0805.web.dto.user.FindIdResponse;
+import com.github.hong0805.web.dto.user.JwtResponse;
+import com.github.hong0805.web.dto.user.LoginRequest;
+import com.github.hong0805.web.dto.user.RegisterRequest;
+import com.github.hong0805.web.dto.user.ResetPasswordRequest;
+import com.github.hong0805.web.dto.user.VerificationRequest;
+import com.github.hong0805.web.dto.user.VerifyCodeResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,8 +37,11 @@ public class AuthApiController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+	public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 		String token = authService.login(request);
+		if (token == null) {
+			return ResponseEntity.status(401).body(new ApiResponse(false, "아이디 또는 비밀번호가 틀렸습니다."));
+		}
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
 

@@ -19,13 +19,14 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.authorizeRequests().antMatchers("/api/auth/**", "/auth/**", "/css/**", "/js/**", "/images/**")
-				.permitAll().anyRequest().authenticated().and()
+				.authorizeRequests().antMatchers("/api/auth/**", "/auth/**", "/css/**", "/js/**", "/images/**", "/")
+				.permitAll().antMatchers("/bbs/**").authenticated().anyRequest().permitAll().and()
 				.addFilterBefore(new JwtAuthFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();

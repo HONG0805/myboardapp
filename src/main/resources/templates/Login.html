@@ -23,7 +23,7 @@
 		<section class="login_section">
 			<form id="loginForm">
 				<div class="input_box">
-					<label for="user_id">아이디</label> <input type="text" name="userID"
+					<label for="user_id">아이디</label> <input type="text" name="userId"
 						id="user_id" placeholder="아이디를 입력해주세요." required>
 				</div>
 				<div class="input_box">
@@ -63,69 +63,63 @@
 	</div>
 
 	<script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-            const loginForm = document.getElementById('loginForm');
-            const errorMessage = document.getElementById('client-error-message');
+		document.addEventListener('DOMContentLoaded', function () {
+			const loginForm = document.getElementById('loginForm');
+			const errorMessage = document.getElementById('client-error-message');
 
-            loginForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-                
-                const formData = {
-                    userID: document.getElementById('user_id').value.trim(),
-                    userPassword: document.getElementById('user_pw').value.trim()
-                };
+			loginForm.addEventListener('submit', function (event) {
+				event.preventDefault();
 
-                // 필수 입력값 검증
-                if (!formData.userID || !formData.userPassword) {
-                    showError("아이디와 비밀번호를 모두 입력해주세요.");
-                    return;
-                }
+				const formData = {
+					userId: document.getElementById('user_id').value.trim(),
+					userPassword: document.getElementById('user_pw').value.trim()
+				};
 
-                fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                })
-                .then(response => {
-                    if (response.status === 401) {
-                        throw new Error('인증 실패');
-                    }
-                    if (!response.ok) {
-                        throw new Error('서버 오류 발생');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.token) {
-                        // JWT 토큰 저장 (로컬 스토리지)
-                        localStorage.setItem('jwtToken', data.token);
-                        
-                        // 헤더에 인증 정보 추가 (선택사항)
-                        const headers = new Headers();
-                        headers.append('Authorization', `Bearer ${data.token}`);
-                        
-                        // 메인 페이지로 리다이렉트
-                        window.location.href = '/bbs/mainpage';
-                    } else {
-                        throw new Error('토큰 수신 실패');
-                    }
-                })
-                .catch(error => {
-                    showError('아이디 또는 비밀번호가 올바르지 않습니다.');
-                    console.error('Login error:', error);
-                });
-            });
+				if (!formData.userId || !formData.userPassword) {
+					showError("아이디와 비밀번호를 모두 입력해주세요.");
+					return;
+				}
 
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
-            }
-        });
-    </script>
+				fetch('/api/auth/login', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(formData)
+				})
+				.then(response => {
+					if (response.status === 401) {
+						throw new Error('인증 실패');
+					}
+					if (!response.ok) {
+						throw new Error('서버 오류 발생');
+					}
+					return response.json();
+				})
+				.then(data => {
+    				if (data.token) {
+ 
+        				document.cookie = `JWT=${data.token}; path=/`;
+
+        				window.location.href = '/bbs/main';
+    				} else {
+        				throw new Error('토큰 수신 실패');
+    				}
+				})
+				.catch(error => {
+					showError('아이디 또는 비밀번호가 올바르지 않습니다.');
+					console.error('Login error:', error);
+				});
+			});
+
+			function showError(message) {
+				errorMessage.textContent = message;
+				errorMessage.style.display = 'block';
+				setTimeout(() => {
+					errorMessage.style.display = 'none';
+				}, 3000);
+			}
+		});
+	</script>
 </body>
 </html>

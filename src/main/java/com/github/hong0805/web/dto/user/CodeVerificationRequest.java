@@ -1,4 +1,4 @@
-package com.github.hong0805.web.dto;
+package com.github.hong0805.web.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;
