@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,4 +57,9 @@ public class JwtTokenProvider {
 	public String getUserIdFromToken(String token) {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
 	}
+	
+	public String resolveToken(HttpServletRequest request) {
+        return new JwtAuthFilter(this).resolveToken(request);
+    }
+
 }

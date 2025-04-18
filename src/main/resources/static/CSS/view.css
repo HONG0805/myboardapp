@@ -230,21 +230,53 @@ p {
 }
 
 .jjimbtn {
-	margin: 5px;
-	font-weight: bold;
-	background-color: #fffe00;
-	border: 2px solid #f9de2e;
-	border-radius: 10px;
-	color: black;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.jjim-on {
+    background-color: #fac800; 
+    color: white;
+}
+
+.jjim-off {
+    background-color: #ccc; 
+    color: black;
+}
+
+.toast-message {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background-color: #323232;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    z-index: 9999;
+    opacity: 0;
+    animation: fadeinout 2.5s forwards;
+}
+
+@keyframes fadeinout {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
 }
 
 .chatbtn {
-	margin: 5px;
-	font-weight: bold;
-	background-color: #4f94e4;
-	border: 2px solid #4f94e4;
-	border-radius: 10px;
-	color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    background-color: #4f95e4;
+    color: white;
 }
 
 .chatbtn:hover {

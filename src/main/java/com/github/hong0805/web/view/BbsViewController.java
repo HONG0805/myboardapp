@@ -2,9 +2,15 @@ package com.github.hong0805.web.view;
 
 import com.github.hong0805.domain.Bbs;
 import com.github.hong0805.service.BbsService;
+import com.github.hong0805.service.JjimService;
+import com.github.hong0805.service.ReplyService;
 import com.github.hong0805.web.dto.bbs.BbsResponse;
 import com.github.hong0805.web.dto.bbs.BbsSearch;
+import com.github.hong0805.web.dto.reply.ReplyResponse;
+
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 public class BbsViewController {
 
 	private final BbsService bbsService;
+	private final JjimService jjimService;
+	private final ReplyService replyService;
 
 	// 메인 페이지
 	@GetMapping("/main")
@@ -29,12 +37,14 @@ public class BbsViewController {
 			@RequestParam(value = "searchWord", required = false) String searchWord, Model model,
 			Authentication authentication) {
 
-		// 로그인한 사용자 ID 전달 (MainPage.html에서 userID 활용)
-		if (authentication != null && authentication.getPrincipal() instanceof String) {
-			model.addAttribute("userID", authentication.getPrincipal());
+		// 인증 정보 처리
+		if (authentication != null && authentication.isAuthenticated()) {
+			String userId = authentication.getName();
+			model.addAttribute("userID", userId);
+			System.out.println("Current userID: " + userId);
 		}
 
-		// 게시글 목록 조회
+		// 기존 게시글 목록 처리 로직
 		BbsSearch search = new BbsSearch(searchWord);
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.by("bbsDate").descending());
 		Page<BbsResponse> postPage = bbsService.getPostList(search, pageable);
@@ -61,17 +71,38 @@ public class BbsViewController {
 		return "update";
 	}
 
-	// 게시글 상세 보기
+	// 게시물 상세 보기
 	@GetMapping("/view/{id}")
-	public String viewPost(@PathVariable Long id, Model model) {
+	public String viewPost(@PathVariable Long id, Model model, Authentication authentication) {
+
+		// 게시글 정보 가져오기
 		BbsResponse post = bbsService.getPostById(id);
 		model.addAttribute("post", post);
+
+		boolean isJjim = false;
+
+		// 인증 정보가 있을 경우
+		if (authentication != null && authentication.isAuthenticated()) {
+			String userId = authentication.getName();
+			model.addAttribute("userID", userId);
+			System.out.println("Current userID: " + userId);
+
+			// 찜 상태 확인
+			isJjim = jjimService.checkIfAlreadyJjimmed(id, userId);
+		}
+
+		model.addAttribute("isJjim", isJjim);
+
+		// 댓글 목록 가져오기
+		List<ReplyResponse> replyList = replyService.getReplies(id);
+		model.addAttribute("replyList", replyList);
+
 		return "view";
 	}
 
 	// 채팅 페이지
 	@GetMapping("/chat/{id}")
-	public String chatPage(@PathVariable Long id, Model model) {
+	public String chatPage(@PathVariable Long id, Model model, Authentication authentication) {
 		BbsResponse post = bbsService.getPostById(id);
 		model.addAttribute("post", post);
 		return "Chat";
@@ -91,9 +122,4 @@ public class BbsViewController {
 		return "searchedBbs";
 	}
 
-	// 찜 목록 페이지
-	@GetMapping("/jjim")
-	public String jjimList() {
-		return "jjimBbs";
-	}
 }

@@ -7,9 +7,19 @@
 <title>강남대학교 중고장터</title>
 <link rel="stylesheet" th:href="@{/CSS/reset.css?v=1.0}">
 <link rel="stylesheet" th:href="@{/CSS/MainPage.css?v=1.0}">
-<script th:src="@{/js/jquery.min.js}"></script>
 </head>
 <body>
+	<div style="display: none;">
+		<p>
+			Authentication 객체: <span th:text="${#authentication}"></span>
+		</p>
+		<p>
+			userID 값: <span th:text="${userID}"></span>
+		</p>
+		<p>
+			인증 여부: <span th:text="${#authentication?.isAuthenticated()}"></span>
+		</p>
+	</div>
 	<div id="wrap">
 		<section class="info_section">
 			<ul class="info_list">
@@ -98,7 +108,7 @@
 								<div class="bbsdate">
 									<span
 										th:text="${#temporals.format(bbs.bbsDate, 'yyyy-MM-dd HH:mm')}"></span>
-									<b>| 작성자:</b> <span th:text="${bbs.userName}"></span>
+									<b>| 작성자:</b> <span th:text="${bbs.userID}"></span>
 								</div>
 							</a>
 						</div>
