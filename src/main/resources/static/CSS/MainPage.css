@@ -115,16 +115,11 @@
 	box-sizing: border-box;
 }
 
-.search_check {
-	background-color: #4f94e4b3;
-	margin-left: 10px;
-}
-
 .content_row_2>form.search>input.text {
 	flex-grow: 1;
 	height: 30px;
 	border: 0;
-	width: calc(100% - 40px); /* 여백을 제외한 너비 설정 */
+	width: calc(100% - 40px);
 	color: #292929;
 	font-size: 14px;
 	background-color: transparent;
@@ -142,8 +137,11 @@
 	padding: 5px;
 }
 
+.bbs-image {
+	width: 30%;
+}
+
 .bbstitle {
-	width: 60%;
 	margin: 15px 0px 15px 10px;
 	font-weight: bold;
 	font-size: 20px;
@@ -153,7 +151,6 @@
 }
 
 .bbscontent {
-	width: 60%;
 	margin: 15px 0px 15px 10px;
 	color: gray;
 	overflow: hidden;
@@ -162,7 +159,6 @@
 }
 
 .bbsdate {
-	width: 100%;
 	font-size: 12px;
 	margin: 10px;
 }

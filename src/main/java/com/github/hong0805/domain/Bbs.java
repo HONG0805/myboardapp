@@ -36,6 +36,6 @@ public class Bbs {
 	@Column(name = "cost", nullable = false)
 	private int cost;
 
-	@Column(name = "bbsImage") // 이미지 파일명 또는 경로
+	@Column(name = "bbsImage")
 	private String bbsImage;
 }

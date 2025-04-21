@@ -19,4 +19,11 @@ public class BbsResponse {
 	private int cost;
 	private String bbsImage;
 
+	public String getBbsImage() {
+		return bbsImage;
+	}
+
+	public void setBbsImage(String bbsImage) {
+		this.bbsImage = bbsImage;
+	}
 }

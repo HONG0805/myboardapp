@@ -10,7 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BbsSearch {
-
 	private String keyword;
+	private String searchType;
+
+	public BbsSearch(String keyword) {
+		this.keyword = keyword;
+	}
 
 }

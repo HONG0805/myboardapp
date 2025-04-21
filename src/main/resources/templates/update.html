@@ -4,15 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-<title>강남대학교 중고장터 내 정보</title>
-<link rel="stylesheet" type="text/css" href="@{/CSS/reset.css}">
-<link rel="stylesheet" type="text/css" href="@{/CSS/update.css}">
-<link rel="shortcut icon" href="@{/images/favicon/favicon.ico}">
+<title>강남대학교 중고장터 게시글 수정</title>
+<link rel="stylesheet" type="text/css" th:href="@{/CSS/reset.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/CSS/update.css}">
+<link rel="shortcut icon" th:href="@{/images/favicon/favicon.ico}">
 <script src="https://kit.fontawesome.com/e1bd1cb2a5.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <link rel="apple-touch-icon-precomposed"
-	href="@{/images/favicon/flat-design-touch.png}">
-<script src="@{/js/jquery.min.js}"></script>
+	th:href="@{/images/favicon/flat-design-touch.png}">
 <script type="text/javascript">
         window.addEventListener('keyup', () => {
             const btnBoard = document.getElementById('btn_board');
@@ -33,52 +32,135 @@
 <body>
 	<div id="wrap">
 		<section class="info_section">
-			<ul class="info_list">
-				<li><a href="@{/jjimBbs}"><img
-						src="@{/images/s_images/free-icon-font-bell-3917226.png}"
-						style="width: 30px; height: auto;" alt="">찜목록</a></li>
-				<li><a href="@{/MyPage}"><img
-						src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
-						style="width: 30px; height: auto;" alt="">내정보</a></li>
-				<li><a href="@{/Logout}"><img
-						src="@{/images/s_images/free-icon-font-comments-5074600.png}"
-						style="width: 30px; height: auto;" alt="">로그아웃</a></li>
-			</ul>
+			<th:block th:if="${userID == null}">
+				<ul class="info_list">
+					<li><a th:href="@{/bbs/main}"><img
+							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
+							style="width: 30px;">메인홈</a></li>
+					<li><a th:href="@{/auth/login}"><img
+							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
+							style="width: 30px;">내정보</a></li>
+					<li><a th:href="@{/auth/login}"><img
+							th:src="@{/images/s_images/free-icon-font-comments-5074600.png}"
+							style="width: 30px;">로그인</a></li>
+				</ul>
+			</th:block>
+
+			<th:block th:if="${userID != null}">
+				<ul class="info_list">
+					<li><a th:href="@{/bbs/jjim}"><img
+							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
+							style="width: 30px;">찜목록</a></li>
+					<li><a th:href="@{/bbs/mypage}"><img
+							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
+							style="width: 30px;">내정보</a></li>
+					<li><a th:href="@{/auth/logout}"><img
+							th:src="@{/images/s_images/free-icon-font-comments-5074600.png}"
+							style="width: 30px;">로그아웃</a></li>
+				</ul>
+			</th:block>
 		</section>
 
 		<header class="header">
 			<h1 class="logo">
-				<a href="@{/MainPage}"><img src="@{/images/s_images/마크.png}"
-					style="width: 98px; height: auto;" alt=""> <span id="logo_1">강남대학교</span>
-					중고장터</a>
+				<a href="/bbs/main"><img src="/images/s_images/마크.png"
+					style="width: 98px;"> <span id="logo_1">강남대학교</span> 중고장터</a>
 			</h1>
 		</header>
 
 		<section class="board_section">
 			<form method="post"
-				th:action="@{/bbs/update/{bbsID}(bbsID=${bbs.bbsID})}"
+				th:action="@{/api/bbs/update/{bbsID}(bbsID=${post.bbsID})}"
 				enctype="multipart/form-data">
+				<input type="hidden" name="_method" value="put"> <input
+					type="hidden" name="bbsID" th:value="${post.bbsID}">
+
 				<div class="category_div">
 					<input type="text" autocapitalize="off" placeholder="제목을 입력해 주세요."
 						class="title" id="bbs_title" name="bbsTitle" maxlength="50"
-						th:value="${bbs.bbsTitle}">
+						th:value="${post.bbsTitle}">
 				</div>
-				<input type="file" name="uploadFile" class="folder_images">
+
+				<input type="file" name="file" class="folder_images">
+
+				<div class="image-container">
+					<div th:if="${post.bbsImage != null}" class="existing-image">
+						<img th:src="@{'/api/bbs/images/' + ${post.bbsImage}}"
+							style="max-width: 100px; margin: 10px;">
+					</div>
+					<input type="hidden" name="bbsImage" th:value="${post.bbsImage}">
+					<button type="button" class="delete-image-btn">이미지 삭제</button>
+				</div>
+
 				<div class="category_div">
-					<input type="number" name="cost" class="title"
-						placeholder="가격을 입력해 주세요." maxlength="50" id="bbs_cost"
-						name="cost" th:value="${bbs.cost}">
+					<input type="number" class="title" placeholder="가격을 입력해 주세요."
+						maxlength="50" id="bbs_cost" name="cost" th:value="${post.cost}">
 				</div>
+
 				<div class="article_content">
 					<textarea autocapitalize="off" placeholder="글을 작성해 주세요."
 						class="title" id="bbs_content" name="bbsContent" maxlength="2048"
-						th:text="${bbs.bbsContent}"></textarea>
+						th:text="${post.bbsContent}"></textarea>
 				</div>
+
 				<div class="btn_div">
 					<button type="submit" class="board_btn" id="btn_board" disabled>수정하기</button>
 				</div>
 			</form>
 		</section>
 	</div>
+
+	<script>
+document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message); // 성공 메시지 표시
+            window.location.href = `/bbs/view/${formData.get('bbsID')}`; 
+        } else {
+            alert('수정 실패: ' + result.message);
+        }
+    } catch (error) {
+        alert('오류 발생: ' + error.message);
+    }
+});
+
+//이미지 삭제 버튼 처리
+document.querySelector('.delete-image-btn').addEventListener('click', () => {
+    const container = document.querySelector('.image-container');
+    container.querySelector('input[name="bbsImage"]').value = '';
+    container.querySelector('.existing-image')?.remove();
+    document.querySelector('input[name="file"]').value = '';
+});
+
+// 이미지 미리보기
+document.querySelector('input[name="file"]').addEventListener('change', (e) => {
+    const container = document.querySelector('.image-container');
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            let imgBox = container.querySelector('.existing-image');
+            if (!imgBox) {
+                imgBox = document.createElement('div');
+                imgBox.className = 'existing-image';
+                container.prepend(imgBox);
+            }
+            imgBox.innerHTML = `<img src="${event.target.result}" style="max-width:100px; margin:10px;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 </body>
 </html>

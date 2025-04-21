@@ -1,6 +1,5 @@
 package com.github.hong0805.web.view;
 
-import com.github.hong0805.domain.Bbs;
 import com.github.hong0805.service.BbsService;
 import com.github.hong0805.service.JjimService;
 import com.github.hong0805.service.ReplyService;
@@ -45,7 +44,7 @@ public class BbsViewController {
 		}
 
 		// 기존 게시글 목록 처리 로직
-		BbsSearch search = new BbsSearch(searchWord);
+		BbsSearch search = new BbsSearch(searchWord, searchWord);
 		Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.by("bbsDate").descending());
 		Page<BbsResponse> postPage = bbsService.getPostList(search, pageable);
 
@@ -59,15 +58,24 @@ public class BbsViewController {
 
 	// 게시글 작성 페이지
 	@GetMapping("/write")
-	public String writeForm() {
+	public String writeForm(Authentication authentication, Model model) {
+		if (authentication != null && authentication.isAuthenticated()) {
+			model.addAttribute("userID", authentication.getName());
+		}
 		return "Board";
 	}
 
 	// 게시글 수정 페이지
 	@GetMapping("/update/{id}")
-	public String updateForm(@PathVariable Long id, Model model) {
+	public String updateForm(@PathVariable Long id, Model model, Authentication authentication) {
 		BbsResponse post = bbsService.getPostById(id);
+
 		model.addAttribute("post", post);
+		model.addAttribute("bbs", post);
+
+		if (authentication != null && authentication.isAuthenticated()) {
+			model.addAttribute("userID", authentication.getName());
+		}
 		return "update";
 	}
 
@@ -75,8 +83,16 @@ public class BbsViewController {
 	@GetMapping("/view/{id}")
 	public String viewPost(@PathVariable Long id, Model model, Authentication authentication) {
 
-		// 게시글 정보 가져오기
 		BbsResponse post = bbsService.getPostById(id);
+
+		if (!post.isBbsAvailable()) {
+			return "error/404";
+		}
+
+		// 이미지 경로를 외부에서 접근 가능한 URL로 변환
+		if (post.getBbsImage() != null) {
+			post.setBbsImage("/images/" + post.getBbsImage());
+		}
 		model.addAttribute("post", post);
 
 		boolean isJjim = false;
@@ -105,12 +121,18 @@ public class BbsViewController {
 	public String chatPage(@PathVariable Long id, Model model, Authentication authentication) {
 		BbsResponse post = bbsService.getPostById(id);
 		model.addAttribute("post", post);
+		if (authentication != null && authentication.isAuthenticated()) {
+			model.addAttribute("userID", authentication.getName());
+		}
 		return "Chat";
 	}
 
 	// 마이페이지
 	@GetMapping("/mypage")
-	public String myPage() {
+	public String myPage(Authentication authentication, Model model) {
+		if (authentication != null && authentication.isAuthenticated()) {
+			model.addAttribute("userID", authentication.getName());
+		}
 		return "MyPage";
 	}
 
@@ -121,5 +143,4 @@ public class BbsViewController {
 		model.addAttribute("bbsList", bbsService.getPostList(search, pageable));
 		return "searchedBbs";
 	}
-
 }

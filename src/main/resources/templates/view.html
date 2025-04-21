@@ -81,8 +81,9 @@
 						th:text="${#numbers.formatInteger(post.cost, 0, 'COMMA')}"></span>원
 				</p>
 				<div th:if="${post.bbsImage != null}">
-					<img th:src="@{'/images/' + ${post.bbsImage}}"
-						style="max-width: 100%; margin-bottom: 15px;">
+					<img th:if="${post.bbsImage != null}"
+						th:src="@{'/api/bbs' + ${post.bbsImage}}"
+						style="max-width: 100%; height: auto; margin-bottom: 15px;">
 				</div>
 				<p style="white-space: pre-line;" th:text="${post.bbsContent}"></p>
 
@@ -142,11 +143,12 @@
 
 		<section class="board_section_1">
 			<div class="btn_div">
-				<a th:if="${authentication?.name == post.userID}"
-					th:href="@{/bbs/update/{id}(id=${post.bbsID})}" class="btn_primary">수정</a>
-				<a th:if="${authentication?.name == post.userID}"
-					th:href="@{/api/bbs/{id}(id=${post.bbsID})}"
-					onclick="return confirm('정말로 삭제하시겠습니까?')" class="btn_primary">삭제</a>
+				<th:block th:if="${post.userID == userID}">
+					<a th:href="@{/bbs/update/{id}(id=${post.bbsID})}"
+						class="btn_primary">수정</a>
+					<a href="#" th:onclick="|deletePost(${post.bbsID})|"
+						onclick="return false;" class="btn_primary">삭제</a>
+				</th:block>
 				<a href="/bbs/main" class="back_list">목록</a>
 			</div>
 		</section>
@@ -255,6 +257,31 @@
             }
         });
     });
+    
+    // 게시글 삭제
+    function deletePost(bbsID) {
+        if (!confirm("정말로 삭제하시겠습니까?")) return;
+
+        const token = getCookie('JWT'); 
+
+        fetch('/api/bbs/' + bbsID, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        }).then(response => {
+            if (response.ok) {
+                alert("게시글이 삭제되었습니다.");
+                window.location.href = '/bbs/main'; 
+            } else {
+                alert("게시글 삭제에 실패했습니다.");
+            }
+        }).catch(error => {
+            console.error("삭제 오류:", error);
+            alert("오류가 발생했습니다.");
+        });
+    }
+
 </script>
 </body>
 </html>

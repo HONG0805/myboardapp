@@ -102,8 +102,12 @@
 								<div class="bbscontent">
 									<span th:text="${bbs.bbsContent}"></span>
 									<p>
-										가격: <span th:text="${bbs.cost}">원</span>
+										가격: <span th:text="${bbs.cost}"></span>원
 									</p>
+								</div>
+								<div th:if="${bbs.bbsImage != null}" class="bbs-image">
+									<img th:src="@{${bbs.bbsImage}}"
+										style="max-width: 100%; height: auto; margin-bottom: 10px;">
 								</div>
 								<div class="bbsdate">
 									<span
