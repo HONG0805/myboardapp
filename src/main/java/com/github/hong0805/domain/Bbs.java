@@ -3,6 +3,8 @@ package com.github.hong0805.domain;
 import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "bbs")
@@ -12,6 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Bbs {
+
+	@OneToMany(mappedBy = "bbs", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Reply> replies = new ArrayList<>();
+
+	@OneToMany(mappedBy = "bbs", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Jjim> jjims = new ArrayList<>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
