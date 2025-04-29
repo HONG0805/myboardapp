@@ -12,13 +12,14 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -127,6 +128,11 @@ public class BbsService {
 			}
 		}
 		return page.map(this::toResponse);
+	}
+
+	public List<BbsResponse> findByUserIDAndBbsAvailableTrue(String userID) {
+		List<Bbs> posts = bbsRepository.findByUserIDAndBbsAvailableTrue(userID);
+		return posts.stream().map(this::toResponse).collect(Collectors.toList());
 	}
 
 	// Bbs 엔티티를 BbsResponse로 변환

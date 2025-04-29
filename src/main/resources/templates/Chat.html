@@ -1,208 +1,271 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>강남대학교 중고장터</title>
-<link rel="stylesheet" type="text/css"
-	th:href="@{/static/CSS/reset.css?v=2.0}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/static/CSS/Chat.css?v=1.1}">
-<link rel="shortcut icon"
-	th:href="@{/static/images/favicon/favicon.ico}">
-<link rel="apple-touch-icon-precomposed"
-	th:href="@{/static/images/favicon/flat-design-touch.png}">
+<link rel="stylesheet" th:href="@{/CSS/reset.css?v=1.0}">
+<link rel="stylesheet" th:href="@{/CSS/Chat.css?v=1.0}">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-	var websocket;
-	var line = 0;
-	var userID = /*[[${session.userID}]]*/""; // Thymeleaf 변수로 사용자 ID를 가져오기
-	var roomId = /*[[${roomId}]]*/0; // roomId 값도 Thymeleaf 변수로 가져오기
+<script
+	src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:inline="javascript">
+	var stompClient = null;
+	var userID = /*[[${userID}]]*/null;
+	var roomId = /*[[${roomId}]]*/null;
+	var bbsTitle = /*[[${bbstitle}]]*/'';
+	var otherUserId = /*[[${otherUserId}]]*/'';
 
-	if (userID === "") {
-		alert("로그인 후 이용 가능합니다.");
-		window.location.href = '/login';  <!-- 로그인 페이지로 이동 -->
-	} else {
-		websocket = new WebSocket("ws://localhost:8080/Chat/" + roomId
-				+ "?userID=" + userID);
-	}
-
-	websocket.onopen = function(message) {
-		console.log("WebSocket 연결 되었습니다.");
-	}
-
-	websocket.onclose = function(message) {
-		console.log("WebSocket 연결이 종료되었습니다.");
-	}
-
-	websocket.onerror = function(event) {
-		console.error("WebSocket 오류 발생:", event);
-	}
-
-	websocket.onmessage = function(message) {
-		var chatBox = document.getElementById("chat");
-		if (++line % 20 == 0) {
-			line = 0;
-			chatBox.value = "";
+	$(document).ready(function() {
+		if (userID === "") {
+			alert("로그인 후 이용 가능합니다.");
+			window.location.href = '/auth/login';
+			return;
 		}
 
-		var parts = message.data.split(":", 2);
-		var senderID = parts[0].trim();
-		var chatMessage = parts[1] ? parts[1].trim() : "";
-
-		var cssClass;
-		if (senderID === userID) {
-			cssClass = "my-message";
-		} else {
-			cssClass = "other-message"; // 변경: ownerID 조건을 제거하고 기본 처리
+		if (!roomId) {
+			console.error("roomId is not available");
+			alert("채팅방 정보를 불러올 수 없습니다.");
+			return;
 		}
 
-		var messageDiv = document.createElement("div");
-		messageDiv.className = cssClass;
-		messageDiv.innerHTML = "<strong>" + senderID + "</strong> "
-				+ chatMessage;
-		chatBox.appendChild(messageDiv);
+		connect();
+		loadChatHistory();
+	});
 
+	function connect() {
+		var socket = new SockJS('/ws-chat');
+		stompClient = Stomp.over(socket);
+
+		stompClient.connect({}, function(frame) {
+			console.log('Connected: ' + frame);
+
+			console.log('Subscribing to /topic/chat/' + roomId);
+			stompClient.subscribe('/topic/chat/' + roomId, function(message) {
+				console.log('Received raw message:', message);
+				showMessage(JSON.parse(message.body));
+			});
+
+			// 채팅방 입장 알림
+			stompClient.send("/app/chat.join", {}, JSON.stringify({
+				'roomId' : roomId,
+				'senderId' : userID,
+				'type' : 'ENTER'
+			}));
+		}, function(error) {
+			console.error('WebSocket Error:', error);
+			alert("채팅 서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+		});
+	}
+
+	function disconnect() {
+		if (stompClient !== null) {
+			stompClient.send("/app/chat.leave", {}, JSON.stringify({
+				'roomId' : roomId,
+				'senderId' : userID,
+				'type' : 'LEAVE'
+			}));
+			stompClient.disconnect();
+		}
+		console.log("Disconnected");
+	}
+
+	function loadChatHistory() {
+	    console.log('Loading chat history for room:', roomId); 
+	    $.ajax({
+	        url: '/api/chat/messages/' + roomId,
+	        type: 'GET',
+	        success: function(messages) {
+	            console.log('Loaded messages:', messages); 
+	            messages.forEach(function(message) {
+	                if (!message.content) {
+	                    console.warn('Invalid message in history:', message);
+	                    return;
+	                }
+	                showMessage(message);
+	            });
+	        },
+	        error: function(xhr) {
+	            console.error("Error loading history:", xhr.status, xhr.responseText);
+	        }
+	    });
+	}
+
+	function sendMessage() {
+		// 1. 입력 요소 정확히 선택
+		var messageInput = document.getElementById('messageInput');
+
+		// 2. 입력값 존재 여부 확인
+		if (!messageInput || !messageInput.value) {
+			console.error("메시지 입력 요소를 찾을 수 없거나 값이 없습니다.");
+			return;
+		}
+
+		// 3. 값 trim 처리 전 undefined 체크
+		var messageContent = messageInput.value.trim();
+		if (!messageContent) {
+			alert("메시지를 입력해주세요.");
+			return;
+		}
+
+		// 4. WebSocket 연결 상태 확인
+		if (!stompClient || !stompClient.connected) {
+			alert("채팅 서버에 연결되지 않았습니다.");
+			return;
+		}
+
+		// 5. 메시지 전송
+		stompClient.send("/app/chat.send", {}, JSON.stringify({
+			roomId : roomId,
+			senderId : userID,
+			content : messageContent
+		}));
+
+		// 6. 입력창 초기화
+		messageInput.value = '';
+	}
+
+	function showMessage(message) {
+	    console.log('Displaying message:', message);
+	    
+	    if (!message || !message.content) {
+	        console.error('Invalid message format:', message);
+	        return;
+	    }
+
+	    var chatBox = $('#chatBox');
+	    var messageClass = message.senderId === userID ? 'other-message' : 'my-message';
+	    
+	    var messageHtml = `
+	        <div class="${messageClass}">
+	            <strong>${escapeHtml(message.senderId)}</strong>
+	            ${escapeHtml(message.content)}
+	            <span class="message-time">${formatTime(message.createdAt)}</span>
+	        </div>
+	    `;
+	    
+	    chatBox.append(messageHtml);
+	    scrollToBottom();
+	}
+
+	function scrollToBottom() {
+		var chatBox = document.getElementById('chatBox');
 		chatBox.scrollTop = chatBox.scrollHeight;
 	}
 
-	function sendmessage() {
-		if (websocket.readyState === WebSocket.OPEN) {
-			var msg = escapeHtml(document.getElementById("send").value);
+	function escapeHtml(str) {
+		if (!str)
+			return '';
+		return str.replace(/[&<>"']/g, function(match) {
+			return {
+				'&' : '&amp;',
+				'<': '&lt;',
+                    '>' : '&gt;',
+				'"' : '&quot;',
+				"'" : '&#039;'
+			}[match];
+		});
+	}
 
-			$.ajax({
-				url : '/chat/sendMessage',
-				type : 'POST',
-				data : {
-					roomId : roomId,
-					userID : userID,
-					message : msg
-				},
-				success : function(response) {
-					websocket.send(msg);
-					document.getElementById("send").value = "";
-				},
-				error : function() {
-					alert("서버와 연결할 수 없습니다.");
-				}
-			});
-		} else {
-			console.warn("WebSocket 연결이 닫혀 있습니다.");
-			alert("WebSocket 연결이 닫혀 있습니다. 페이지를 새로고침하세요.");
+	function formatTime(timestamp) {
+		if (!timestamp)
+			return '';
+		var date = new Date(timestamp);
+		return ' ' + date.getHours() + ':'
+				+ (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+	}
+
+	function keypress(event) {
+		if (event.keyCode === 13) {
+			sendMessage();
+			event.preventDefault();
 		}
 	}
 
-	function escapeHtml(str) {
-		return str.replace(/[&<>"']/g, function(match) {
-			const escape = {
-				'&' : '&amp;',
-				'<': '&lt;',
-                '>' : '&gt;',
-				'"' : '&quot;',
-				"'" : '&#039;'
-			};
-			return escape[match];
-		});
-	}
+	window.onbeforeunload = function() {
+		disconnect();
+	};
 </script>
 </head>
 <body>
-	<div th:switch="${empty userID}">
-		<div th:case="true">
-			<!-- 로그인하지 않은 경우 -->
-			<div id="wrap">
-				<section class="info_section">
-					<ul class="info_list">
-						<li><a th:href="@{/main}"><img
-								th:src="@{/static/images/s_images/free-icon-font-bell-3917226.png}"
-								style="width: 30px; height: auto;" alt="">메인홈</a></li>
-						<li><a th:href="@{/login}"><img
-								th:src="@{/static/images/s_images/free-icon-font-id-badge-3914510.png}"
-								style="width: 30px; height: auto;" alt="">내정보</a></li>
-						<li><a th:href="@{/login}"><img
-								th:src="@{/static/images/s_images/free-icon-font-comments-5074600.png}"
-								style="width: 30px; height: auto;" alt="">로그인</a></li>
-					</ul>
-				</section>
-				<header class="header">
-					<h1 class="logo">
-						<a th:href="@{/main}"> <img
-							th:src="@{/static/images/s_images/마크.png}"
-							style="width: 98px; height: auto;" alt=""> <span
-							id="logo_1">강남대학교</span> 중고장터
-						</a>
-					</h1>
-				</header>
-				<section class="sign_section">
-					<div class="signup">
-						<h2>로그인 후 이용가능 합니다.</h2>
-						<div>
-							<input type="button" id="btnPwSearch" class="loginbtn"
-								value="로그인" th:onclick="|location.href='@{/login}'|" />
-						</div>
-						<div>
-							<input type="button" id="btnSignUp" class="loginbtn" value="회원가입"
-								th:onclick="|location.href='@{/signup}'|" />
-						</div>
-					</div>
-				</section>
-			</div>
-		</div>
-		<div th:case="false">
-			<!-- 로그인한 경우 -->
-			<div id="wrap">
-				<section class="info_section">
-					<ul class="info_list">
-						<li><a th:href="@{/jjimBbs}"><img
-								th:src="@{/static/images/s_images/free-icon-font-bell-3917226.png}"
-								style="width: 30px; height: auto;" alt="">찜목록</a></li>
-						<li><a th:href="@{/mypage}"><img
-								th:src="@{/static/images/s_images/free-icon-font-id-badge-3914510.png}"
-								style="width: 30px; height: auto;" alt="">내정보</a></li>
-						<li><a th:href="@{/logout}"><img
-								th:src="@{/static/images/s_images/free-icon-font-comments-5074600.png}"
-								style="width: 30px; height: auto;" alt="">로그아웃</a></li>
-					</ul>
-				</section>
-				<header class="header">
-					<h1 class="logo">
-						<a th:href="@{/main}"> <img
-							th:src="@{/static/images/s_images/마크.png}"
-							style="width: 98px; height: auto;" alt=""> <span
-							id="logo_1">강남대학교</span> 중고장터
-						</a>
-					</h1>
-				</header>
-
-				<section class="chat_section">
-					<h2>채팅</h2>
-					<div id="chat" class="chat_container">
-						<div th:each="messageInfo : ${messages}">
-							<div
-								th:with="messageParts=${#strings.split(messageInfo, '|')}, 
-                                       chatMessage=${messageParts[0]}, 
-                                       cssClass=${messageParts[1]},
-                                       senderID=${#strings.substringBefore(chatMessage, ' ')}, 
-                                       chatText=${#strings.substringAfter(chatMessage, ' ')}">
-								<div th:class="${cssClass}">
-									<strong th:text="${senderID}"></strong> <span
-										th:text="${chatText}"></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-
-				<section class="chat_section_1">
+	<!-- 로그인하지 않은 경우 -->
+	<div id="wrap">
+		<th:block th:if="${userID == null}">
+			<section class="info_section">
+				<ul class="info_list">
+					<li><a th:href="@{/bbs/main}"><img
+							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
+							style="width: 30px;" alt="찜목록">메인홈</a></li>
+					<li><a th:href="@{/auth/login}"><img
+							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
+							style="width: 30px;" alt="내정보">내정보</a></li>
+					<li><a th:href="@{/auth/login}"><img
+							th:src="@{/images/s_images/free-icon-font-comments-5074600.png}"
+							style="width: 30px;" alt="로그인">로그인</a></li>
+				</ul>
+			</section>
+			<header class="header">
+				<h1 class="logo">
+					<a th:href="@{/bbs/main}"><img
+						th:src="@{/images/s_images/마크.png}" style="width: 98px;" alt="로고">
+						<span id="logo_1">강남대학교</span> 중고장터</a>
+				</h1>
+			</header>
+			<section class="sign_section">
+				<div class="signup">
+					<h2>로그인 후 이용가능 합니다.</h2>
 					<div>
-						<input type="text" class="inputchat" id="send"
-							placeholder="메시지를 입력하세요" onkeypress="keypress(event)" />
-						<button class="chat_btn" onclick="sendmessage()">전송</button>
+						<input type="button" class="loginbtn" value="로그인"
+							th:onclick="|location.href='@{/auth/login}'|">
 					</div>
-				</section>
-			</div>
-		</div>
+					<div>
+						<input type="button" class="loginbtn" value="회원가입"
+							th:onclick="|location.href='@{/auth/register}'|">
+					</div>
+				</div>
+			</section>
+		</th:block>
+	</div>
+	<!-- 로그인한 경우 -->
+	<div id="wrap">
+		<th:block th:if="${userID != null}">
+			<section class="info_section">
+				<ul class="info_list">
+					<li><a th:href="@{/auth/login}"><img
+							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
+							style="width: 30px;" alt="메인홈">찜목록</a></li>
+					<li><a th:href="@{/bbs/mypage}"><img
+							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
+							style="width: 30px;" alt="내정보">내정보</a></li>
+					<li><a th:href="@{/auth/logout}"><img
+							th:src="@{/images/s_images/free-icon-font-comments-5074600.png}"
+							style="width: 30px;" alt="로그아웃">로그아웃</a></li>
+				</ul>
+			</section>
+			<header class="header">
+				<h1 class="logo">
+					<a th:href="@{/bbs/main}"><img
+						th:src="@{/images/s_images/마크.png}" style="width: 98px;" alt="로고">
+						<span id="logo_1">강남대학교</span> 중고장터</a>
+				</h1>
+			</header>
+
+			<section class="chat_section">
+				<h2 th:text="${bbstitle != null} ? '채팅 - ' + ${bbstitle} : '채팅'">채팅</h2>
+				<div id="chatBox" class="chat_container">
+					<!-- 메시지가 여기에 표시됩니다 -->
+				</div>
+			</section>
+
+			<section class="chat_input_section">
+				<input class="inputchat" type="text" id="messageInput"
+					placeholder="메시지를 입력하세요">
+				<button class="chat_btn" onclick="sendMessage()">전송</button>
+			</section>
+		</th:block>
 	</div>
 </body>
 </html>

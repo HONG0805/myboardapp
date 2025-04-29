@@ -7,6 +7,7 @@ import com.github.hong0805.domain.User;
 import com.github.hong0805.repository.UserRepository;
 import com.github.hong0805.security.JwtTokenProvider;
 import com.github.hong0805.web.dto.user.*;
+import com.github.hong0805.web.dto.user.UserResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,4 +98,21 @@ public class AuthService {
 		userRepository.save(user);
 		return new ApiResponse(true, "비밀번호가 변경되었습니다.");
 	}
+
+	// 사용자 아이디 조회
+	public UserResponse getUserById(String userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다: " + userId));
+
+		return UserResponse.builder().userId(user.getUserId()).userName(user.getUserName())
+				.userEmail(user.getUserEmail()).build();
+	}
+
+	// 사용자 이름 조회
+	public String getUserName(String userId) {
+		User user = userRepository.findByUserId(userId)
+				.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
+		return user.getUserName();
+	}
+
 }

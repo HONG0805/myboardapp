@@ -1,11 +1,16 @@
 package com.github.hong0805.web.view;
 
+import com.github.hong0805.service.AuthService;
 import com.github.hong0805.service.BbsService;
 import com.github.hong0805.service.JjimService;
 import com.github.hong0805.service.ReplyService;
+import com.github.hong0805.service.ChatService;
 import com.github.hong0805.web.dto.bbs.BbsResponse;
 import com.github.hong0805.web.dto.bbs.BbsSearch;
+import com.github.hong0805.web.dto.chat.ChatRoomResponse;
+import com.github.hong0805.web.dto.jjim.JjimResponse;
 import com.github.hong0805.web.dto.reply.ReplyResponse;
+import com.github.hong0805.web.dto.user.UserResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +34,8 @@ public class BbsViewController {
 	private final BbsService bbsService;
 	private final JjimService jjimService;
 	private final ReplyService replyService;
+	private final AuthService authService;
+	private final ChatService chatService;
 
 	// 메인 페이지
 	@GetMapping("/main")
@@ -119,19 +126,62 @@ public class BbsViewController {
 	// 채팅 페이지
 	@GetMapping("/chat/{id}")
 	public String chatPage(@PathVariable Long id, Model model, Authentication authentication) {
-		BbsResponse post = bbsService.getPostById(id);
-		model.addAttribute("post", post);
-		if (authentication != null && authentication.isAuthenticated()) {
-			model.addAttribute("userID", authentication.getName());
+		try {
+			// 인증 확인
+			if (authentication == null || !authentication.isAuthenticated()) {
+				return "redirect:/auth/login?redirect=/bbs/chat/" + id;
+			}
+
+			String username = authentication.getName();
+			BbsResponse post = bbsService.getPostById(id);
+
+			// 게시물 존재 여부 확인
+			if (post == null) {
+				model.addAttribute("error", "해당 게시물이 존재하지 않습니다.");
+				return "redirect:/bbs/list"; // 게시물 목록으로 이동
+			}
+
+			// 자신의 게시물인지 확인
+			if (username.equals(post.getUserID())) {
+				model.addAttribute("error", "자신의 게시글에는 채팅할 수 없습니다.");
+				return "redirect:/bbs/view/" + id; // 게시물 상세 페이지로 이동
+			}
+
+			// 채팅방 생성 또는 조회
+			ChatRoomResponse chatRoom = chatService.createOrGetChatRoom(username, post.getUserID(), id);
+
+			// 채팅방 ID와 관련 데이터 모델에 추가
+			model.addAttribute("post", post);
+			model.addAttribute("roomId", chatRoom.getRoomId());
+			model.addAttribute("bbstitle", post.getBbsTitle());
+			model.addAttribute("userID", username);
+
+			return "Chat";
+
+		} catch (Exception e) {
+			model.addAttribute("error", "채팅방 생성 중 오류가 발생했습니다: " + e.getMessage());
+			return "redirect:/bbs/view/" + id;
 		}
-		return "Chat";
 	}
 
 	// 마이페이지
 	@GetMapping("/mypage")
 	public String myPage(Authentication authentication, Model model) {
 		if (authentication != null && authentication.isAuthenticated()) {
-			model.addAttribute("userID", authentication.getName());
+			String userId = authentication.getName();
+			model.addAttribute("userID", userId);
+
+			// 사용자 정보 조회
+			UserResponse user = authService.getUserById(userId);
+			model.addAttribute("user", user);
+
+			// 사용자가 작성한 게시글 목록
+			List<BbsResponse> myPosts = bbsService.findByUserIDAndBbsAvailableTrue(userId);
+			model.addAttribute("myPosts", myPosts);
+
+			// 사용자가 찜한 게시글 목록 조회
+			List<JjimResponse> jjimList = jjimService.getUserJjims(userId);
+			model.addAttribute("jjimList", jjimList);
 		}
 		return "MyPage";
 	}

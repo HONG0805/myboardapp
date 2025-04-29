@@ -129,12 +129,12 @@ p {
 	margin: 0 auto;
 }
 
-.chat_section_1 {
+.chat_input_section {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
-	margin-bottom: 100px;
+	width: 300px;
+	margin: 0 auto;
 	order: 4;
 }
 
@@ -208,7 +208,6 @@ p {
 	border-radius: 8px;
 	cursor: pointer;
 	transition: background 0.3s ease;
-	float: right;
 	width: 25%;
 }
 

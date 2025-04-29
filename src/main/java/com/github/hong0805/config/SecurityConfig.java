@@ -29,17 +29,17 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
-				// 정적 리소스 허용
+				// 정적 리소스 및 공개 페이지 허용
 				.antMatchers("/", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-				// 인증 관련 경로 허용
+				// 로그인, 회원가입 등 인증 불필요한 API
 				.antMatchers("/api/auth/**", "/auth/**", "/login", "/bbs/main", "/bbs/view/**").permitAll()
-				// 게시글 작성, 수정, 삭제 등은 인증 필요
+				// 인증 필요한 페이지
 				.antMatchers("/bbs/write", "/bbs/update/**", "/bbs/delete/**", "/bbs/jjim").authenticated()
-				// API 경로 설정
-				.antMatchers("/api/bbs/**").authenticated().anyRequest().permitAll().and()
-				// JWT 필터 추가 (정적 리소스 제외)
+				// 인증 필요한 API
+				.antMatchers("/api/bbs/**", "/api/chat/**").authenticated()
+				// 기타 모든 요청 허용
+				.anyRequest().permitAll().and()
 				.addFilterBefore(new JwtAuthFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-				// 인증되지 않은 요청 처리
 				.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
 					if (isApiRequest(request)) {
 						response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -59,4 +59,5 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
 }

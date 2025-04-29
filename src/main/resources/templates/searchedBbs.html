@@ -19,13 +19,13 @@
 		<!-- 로그인/로그아웃 처리 -->
 		<section class="info_section">
 			<ul class="info_list">
-				<li><a href="@{/mainPage}"><img
+				<li><a href="@{/bbs/main}"><img
 						src="@{/images/s_images/free-icon-font-bell-3917226.png}"
 						style="width: 30px; height: auto;" alt="">메인홈</a></li>
-				<li><a href="@{/login}"><img
+				<li><a href="@{/auth/login}"><img
 						src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
 						style="width: 30px; height: auto;" alt="">내정보</a></li>
-				<li><a href="@{/login}"><img
+				<li><a href="@{/auth/login}"><img
 						src="@{/images/s_images/free-icon-font-comments-5074600.png}"
 						style="width: 30px; height: auto;" alt="">로그인</a></li>
 			</ul>
@@ -34,7 +34,7 @@
 		<!-- 헤더 -->
 		<header class="header">
 			<h1 class="logo">
-				<a href="@{/mainPage}"><img src="@{/images/s_images/마크.png}"
+				<a href="@{/bbs/main}"><img src="@{/images/s_images/마크.png}"
 					style="width: 98px; height: auto;" alt=""> <span id="logo_1">강남대학교</span>
 					중고장터</a>
 			</h1>
@@ -57,7 +57,7 @@
 		<!-- 게시글 리스트 -->
 		<section class="content_section">
 			<div class="content_article">
-				<a href="@{/board}" id="writeArticleButton">새글을 작성해주세요.<img
+				<a href="@{/bbs/writh}" id="writeArticleButton">새글을 작성해주세요.<img
 					src="@{/images/s_images/pen-nib-line.png}" class="writeimg"></a>
 			</div>
 
@@ -65,7 +65,7 @@
 			<div th:each="bbs : ${bbsList}">
 				<div style="text-align: center; border: 1px solid #dddddd">
 					<div class="comment">
-						<a th:href="@{/view/{bbsID}(bbsID=${bbs.bbsID})}">
+						<a th:href="@{'/bbs/view/' + ${bbs.bbsID}}">
 							<div align="left" class="bbstitle" th:text="${bbs.bbsTitle}"></div>
 							<div align="left" class="bbscontent">
 								<span th:text="${bbs.bbsContent}"></span>
