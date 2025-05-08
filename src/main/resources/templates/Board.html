@@ -15,7 +15,7 @@
 		<section class="info_section">
 			<th:block th:if="${userID == null}">
 				<ul class="info_list">
-					<li><a th:href="@{/bbs/main}"><img
+					<li><a th:href="@{/auth/login}"><img
 							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
 							style="width: 30px;">메인홈</a></li>
 					<li><a th:href="@{/auth/login}"><img
@@ -29,9 +29,9 @@
 
 			<th:block th:if="${userID != null}">
 				<ul class="info_list">
-					<li><a th:href="@{/bbs/jjim}"><img
+					<li><a th:href="@{/bbs/main}"><img
 							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
-							style="width: 30px;">찜목록</a></li>
+							style="width: 30px;">메인홈</a></li>
 					<li><a th:href="@{/bbs/mypage}"><img
 							th:src="@{/images/s_images/free-icon-font-id-badge-3914510.png}"
 							style="width: 30px;">내정보</a></li>

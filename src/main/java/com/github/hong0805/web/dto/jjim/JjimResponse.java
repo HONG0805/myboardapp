@@ -9,12 +9,14 @@ public class JjimResponse {
 	private Long jjimID;
 	private Long bbsId;
 	private String userId;
+	private String bbsTitle;
 	private String jjimDate;
 
 	public JjimResponse(Jjim jjim) {
 		this.jjimID = jjim.getJjimID();
 		this.bbsId = jjim.getBbs().getBbsID();
 		this.userId = jjim.getUser().getUserId();
+		this.bbsTitle = jjim.getBbs().getBbsTitle();
 		this.jjimDate = jjim.getJjimDate().toString();
 	}
 }

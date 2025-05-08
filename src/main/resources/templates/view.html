@@ -109,9 +109,10 @@
 				</thead>
 				<tbody>
 					<tr th:each="reply : ${replyList}">
-						<td style="text-align: left; width: 80%;">
+						<td
+							style="text-align: left; width: 80%; border-bottom: 1px solid black; border-right: 1px solid black;">
 							<p style="font-weight: bold;">
-								작성자: <span th:text="${reply.userID}"></span>
+								<span th:text="${reply.userID}"></span>
 							</p>
 							<p style="font-size: 12px;">
 								작성일: <span
@@ -119,7 +120,7 @@
 							</p>
 							<p th:text="${reply.replyContent}"></p>
 						</td>
-						<td style="text-align: center;"><a
+						<td style="text-align: center; border-bottom: 1px solid black;"><a
 							th:if="${reply.userID == userID}" href="#"
 							th:onclick="'deleteReply(' + ${reply.replyID} + ')'"
 							class="reply_delete">삭제</a> <span

@@ -9,17 +9,6 @@
 <link rel="stylesheet" th:href="@{/CSS/MainPage.css?v=1.0}">
 </head>
 <body>
-	<div style="display: none;">
-		<p>
-			Authentication 객체: <span th:text="${#authentication}"></span>
-		</p>
-		<p>
-			userID 값: <span th:text="${userID}"></span>
-		</p>
-		<p>
-			인증 여부: <span th:text="${#authentication?.isAuthenticated()}"></span>
-		</p>
-	</div>
 	<div id="wrap">
 		<section class="info_section">
 			<ul class="info_list">

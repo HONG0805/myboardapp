@@ -74,82 +74,33 @@
 	vertical-align: middle;
 }
 
-div.my_info {
-	display: flex;
-	padding: 10px;
-	padding: 0.625rem;
-}
-
 .my_section {
 	order: 2;
-	position: relative;
 	width: 100%;
-	padding: 10px;
-	padding: 0.625rem;
-	border: 1px solid #1289dd;
-	border-radius: 10px/10px;
+	padding: 20px;
+	background-color: #f8f8f8;
+	margin-top: 30px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .my_section h1 {
-	flex: auto;
-	font-size: 18px;
-	line-height: 26px;
+	font-size: 1.5rem;
 	font-weight: bold;
-}
-
-div.my_info>a.logout {
 	color: white;
-	background: #4fa2e4;
-	padding: 8px;
-	border-radius: 10px;
-	font-size: 14px;
-	font-weight: bold;
-	cursor: pointer;
+	border-radius: 5px;
+	background-color: #4f94e4;
+	margin-bottom: 15px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: center;
+	margin-bottom: 15px;
 }
 
-div.my_profile {
-	margin: 0 18px 14px 18px;
-	position: relative;
-	padding-left: 72px;
-}
-
-div.my_profile img {
-	display: block;
-	position: absolute;
-	left: 0;
-	border-radius: 10px;
-	width: 54px;
-	height: 54px;
-}
-
-div.my_profile h3 {
-	line-height: 20px;
-	font-size: 14px;
-	font-weight: blod;
-}
-
-div.my_profile p {
-	line-height: 18px;
-	font-size: 12px;
-}
-
-.my_section_1 {
-	order: 3;
-	position: relative;
-	width: 100%;
+.my_profile p, h3 {
 	padding: 10px;
-	padding: 0.625rem;
-	border: 1px solid #1289dd;
-	border-radius: 10px/10px;
-	margin-top: 20px;
-}
-
-.my_section_1 h2 {
-	padding: 12px 24px;
-	flex: auto;
-	font-size: 18px;
-	line-height: 26px;
-	font-weight: bold;
+	position: relative;
+	border-bottom: 1px solid black;
 }
 
 .item {
@@ -196,6 +147,16 @@ div.my_profile p {
 	box-sizing: border-box;
 }
 
+.my_activities_section {
+	order: 3;
+	width: 100%;
+	padding: 20px;
+	background-color: #f8f8f8;
+	margin-top: 30px;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .chat_rooms_section {
 	order: 4;
 	width: 100%;
@@ -209,11 +170,30 @@ div.my_profile p {
 .chat_rooms_section h2 {
 	font-size: 1.5rem;
 	font-weight: bold;
-	color: #333;
+	color: white;
+	border-radius: 5px;
+	background-color: #4f94e4;
 	margin-bottom: 15px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: center;
+	border-radius: 5px;
+	background-color: #4f94e4;
 }
 
-.chat_room_item {
+.my_activities_section h2 {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: white;
+	border-radius: 5px;
+	background-color: #4f94e4;
+	margin-bottom: 15px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: center;
+}
+
+.jjim_item {
 	background-color: white;
 	padding: 15px;
 	border-radius: 8px;
@@ -224,13 +204,30 @@ div.my_profile p {
 	align-items: center;
 }
 
-.chat_room_item p {
-	font-size: 1.1rem;
-	color: #333;
+.chat-room-info p, h4 {
+	padding: 5px;
+}
+
+.chat-room-item {
+	background-color: white;
+	padding: 15px;
+	border-radius: 8px;
+	margin-bottom: 10px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.chat-room-item span {
+	padding: 5px;
+	background-color: #e4c54f;
+	color: white;
+	border-radius: 5px;
 	font-weight: bold;
 }
 
-.chat_room_item a {
+.chat-room-item a {
 	padding: 10px 20px;
 	background-color: #4f94e4;
 	color: white;
@@ -240,7 +237,7 @@ div.my_profile p {
 	transition: background-color 0.3s;
 }
 
-.chat_room_item a:hover {
+.chat-room-item a:hover {
 	background-color: #357db7;
 }
 
@@ -271,14 +268,6 @@ div.my_profile p {
 	#wrap {
 		flex-flow: row wrap;
 	}
-	.my_section {
-		order: 2;
-		margin: 0 auto;
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		width: 500px;
-	}
 	.my_section_1 {
 		order: 3;
 		margin: 0 auto;
@@ -287,17 +276,6 @@ div.my_profile p {
 		flex-direction: column;
 		margin-top: 20px;
 		width: 500px;
-	}
-	.chat_rooms_section {
-		order: 4;
-		width: 500px;
-		margin: 0 auto;
-		position: relative;
-		padding: 20px;
-		background-color: #f8f8f8;
-		margin-top: 30px;
-		border-radius: 10px;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 	}
 }
 
@@ -363,7 +341,6 @@ div.my_profile p {
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		width: 500px;
 	}
 	.my_section_1 {
 		order: 3;
@@ -376,7 +353,6 @@ div.my_profile p {
 	}
 	.chat_rooms_section {
 		order: 4;
-		width: 500px;
 		margin: 0 auto;
 		position: relative;
 		padding: 20px;

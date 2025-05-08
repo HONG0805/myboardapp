@@ -4,16 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>강남대학교 중고장터</title>
-<link rel="stylesheet" th:href="@{/CSS/reset.css?v=1.0}">
-<link rel="stylesheet" th:href="@{/CSS/MainPage.css?v=1.0}">
+<title>마이페이지 | 강남대학교 중고장터</title>
+<link rel="stylesheet" th:href="@{/CSS/reset.css}">
+<link rel="stylesheet" th:href="@{/CSS/MyPage.css}">
 </head>
 <body>
 	<div id="wrap">
+
 		<section class="info_section">
 			<ul class="info_list">
 				<th:block th:if="${userID == null}">
-					<li><a th:href="@{/bbs/login}"><img
+					<li><a th:href="@{/auth/login}"><img
 							th:src="@{/images/s_images/free-icon-font-bell-3917226.png}"
 							style="width: 30px;" alt="찜목록">메인홈</a></li>
 					<li><a th:href="@{/auth/login}"><img
@@ -36,16 +37,77 @@
 				</th:block>
 			</ul>
 		</section>
+		<th:block th:if="${userID != null}">
+			<header class="header">
+				<h1 class="logo">
+					<a th:href="@{/bbs/main}"> <img
+						th:src="@{/images/s_images/마크.png}" style="width: 98px;" alt="로고">
+						<span id="logo_1">강남대학교</span> 중고장터
+					</a>
+				</h1>
+			</header>
+		</th:block>
 
-		<header class="header">
-			<h1 class="logo">
-				<a th:href="@{/bbs/main}"><img
-					th:src="@{/images/s_images/마크.png}" style="width: 98px;" alt="로고">
-					<span id="logo_1">강남대학교</span> 중고장터</a>
-			</h1>
-		</header>
+		<th:block th:if="${userID != null}">
+			<!-- 사용자 정보 -->
+			<section class="my_section">
+				<div class="my_info">
+					<h1>내 정보</h1>
+				</div>
+				<div class="my_profile">
+					<h3 th:text="${user.userName}">이름 없음</h3>
+					<p th:text="${user.userId}">아이디 없음</p>
+					<p th:text="${user.userEmail}">이메일 없음</p>
+				</div>
+			</section>
 
+			<!-- 찜 목록 -->
+			<section class="my_activities_section">
+				<h2>찜 목록</h2>
+				<div id="myJjims">
+					<div th:each="jjim : ${jjimList}" class="jjim_item">
+						<a th:href="@{/bbs/view/{id}(id=${jjim.bbsId})}">
+							<h4 th:text="${jjim.bbsTitle}">상품 제목</h4>
+							<p th:text="${jjim.jjimDate}">찜한 날짜</p>
+						</a>
+					</div>
+					<p th:if="${jjimList.isEmpty()}">찜한 상품이 없습니다.</p>
+				</div>
+			</section>
+
+			<!-- 채팅 목록 -->
+			<section class="chat_rooms_section">
+				<h2>채팅방</h2>
+				<div th:each="room : ${#sets.toSet(chatRooms.![bbsId])}"
+					th:with="firstRoom=${chatRooms.?[bbsId == __${room}__][0]}"
+					class="chat-room-item">
+					<div class="chat-room-info">
+						<h4 th:text="${firstRoom.bbsTitle ?: '1:1 채팅'}">채팅방</h4>
+						<p>
+							<span th:text="${firstRoom.otherUserName}">상대방</span>
+						</p>
+						<p class="last-message"
+							th:text="${firstRoom.lastMessage ?: '메시지 없음'}"></p>
+					</div>
+					<a th:href="@{/bbs/chat/{bbsId}(bbsId=${firstRoom.bbsId})}"
+						th:if="${firstRoom.bbsId != null}" class="enter-chat-btn">채팅
+						입장</a>
+				</div>
+				<p th:if="${chatRooms.isEmpty()}">진행 중인 채팅이 없습니다.</p>
+			</section>
+		</th:block>
+
+		<!-- 비로그인 시 안내 -->
 		<th:block th:if="${userID == null}">
+			<header class="header">
+				<h1 class="logo">
+					<a th:href="@{/auth/login}"> <img
+						th:src="@{/images/s_images/마크.png}" style="width: 98px;" alt="로고">
+						<span id="logo_1">강남대학교</span> 중고장터
+					</a>
+				</h1>
+			</header>
+
 			<section class="sign_section">
 				<div class="signup">
 					<h2>로그인 후 이용가능 합니다.</h2>
@@ -61,69 +123,5 @@
 			</section>
 		</th:block>
 	</div>
-
-	<th:block th:if="${userID != null}">
-		<section class="my_section">
-			<div class="my_info">
-				<h1>내 정보</h1>
-				<a href="/Logout" class="logout">로그아웃</a>
-			</div>
-			<div class="my_profile">
-				<h3 th:text="${user.userName}">이름 없음</h3>
-				<p th:text="${user.userID}">아이디 없음</p>
-				<p th:text="${user.email}">이메일 없음</p>
-			</div>
-		</section>
-
-		<section class="my_activities_section">
-			<div class="activities_header">
-				<h2>내 활동</h2>
-			</div>
-			<div class="activities_tabs">
-				<button class="tab_button active" onclick="openTab('myPosts')">내
-					게시글</button>
-				<button class="tab_button" onclick="openTab('myJjims')">찜
-					목록</button>
-				<button class="tab_button" onclick="openTab('myChats')">채팅</button>
-			</div>
-
-			<div id="myPosts" class="tab_content" style="display: block;">
-				<div th:each="post : ${myPosts}" class="post_item">
-					<a th:href="@{/bbs/view/{id}(id=${post.bbsID})}">
-						<h4 th:text="${post.bbsTitle}">제목 없음</h4>
-						<p th:text="${post.bbsDate}">날짜 없음</p>
-					</a>
-				</div>
-				<p th:if="${myPosts.isEmpty()}">작성한 게시글이 없습니다.</p>
-			</div>
-
-			<div id="myJjims" class="tab_content">
-				<!-- 찜 목록이 여기에 표시됩니다 -->
-				<p>찜한 상품이 없습니다.</p>
-			</div>
-
-			<div id="myChats" class="tab_content">
-				<!-- 채팅 목록이 여기에 표시됩니다 -->
-				<p>진행 중인 채팅이 없습니다.</p>
-			</div>
-		</section>
-
-		<section class="my_section_1">
-			<h2>계정</h2>
-			<a href="/MailCheck" class="item">이메일 인증</a> <a
-				href="/ChangePassword" class="item">비밀번호 변경</a>
-		</section>
-
-		<section class="chat_rooms_section">
-			<h2>내 채팅방</h2>
-			<div th:each="room : ${chatRooms}">
-				<div class="chat_room_item">
-					<p th:text="${room[1]}">알 수 없음</p>
-					<a th:href="@{${/chat}?roomID=${room[0]}}">채팅방 입장</a>
-				</div>
-			</div>
-			<p th:if="${chatRooms.isEmpty()}">채팅방이 없습니다.</p>
-		</section>
-	</th:block>
 </body>
 </html>

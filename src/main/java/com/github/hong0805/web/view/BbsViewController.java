@@ -171,17 +171,21 @@ public class BbsViewController {
 			String userId = authentication.getName();
 			model.addAttribute("userID", userId);
 
-			// 사용자 정보 조회
+			// 기존 사용자 정보
 			UserResponse user = authService.getUserById(userId);
 			model.addAttribute("user", user);
 
-			// 사용자가 작성한 게시글 목록
+			// 내 게시글
 			List<BbsResponse> myPosts = bbsService.findByUserIDAndBbsAvailableTrue(userId);
 			model.addAttribute("myPosts", myPosts);
 
-			// 사용자가 찜한 게시글 목록 조회
+			// 찜 목록
 			List<JjimResponse> jjimList = jjimService.getUserJjims(userId);
 			model.addAttribute("jjimList", jjimList);
+
+			// 채팅방 목록
+			List<ChatRoomResponse> chatRooms = chatService.getUserChatRooms(userId);
+			model.addAttribute("chatRooms", chatRooms);
 		}
 		return "MyPage";
 	}
