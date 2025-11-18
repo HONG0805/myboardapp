@@ -12,7 +12,7 @@ Spring Boot 기반으로 리팩토링한 **강남대학교 중고 교재 거래 
 ## 🏗️ 프로젝트 개요
 
 - JWT 기반 안전한 인증 시스템 (토큰 유효성 검사 및 자동 갱신)
-- WebSocket을 활용한 실시간 1:1 채팅 기능
+- WebSocket(STOMP)을 활용한 실시간 1:1 채팅 기능
 - 이메일 인증을 통한 비밀번호 찾기 및 계정 복구
 - RESTful API 기반 프론트/백엔드 분리 아키텍처
 - Spring Data JPA 적용으로 데이터 계층 최적화
@@ -24,7 +24,7 @@ Spring Boot 기반으로 리팩토링한 **강남대학교 중고 교재 거래 
 | 구분        | 기술 스택                                  |
 |-------------|---------------------------------------------|
 | **Frontend**| Thymeleaf, JavaScript, jQuery, HTML, CSS   |
-| **Backend** | Spring Boot, JPA, Spring Security          |
+| **Backend** | Java, Spring Boot, JPA, Spring Security    |
 | **DB**      | MySQL                                      |
 | **툴**      | Eclipse, HeidiSQL, GitHub                  |
 
@@ -91,8 +91,29 @@ Spring Boot 기반으로 리팩토링한 **강남대학교 중고 교재 거래 
 
 ---
 
+## 🗂 ERD
+<img width="1343" height="554" alt="image" src="https://github.com/user-attachments/assets/135b530b-6f97-4fe8-9afe-d4a98dcf8dc3" />
+
+본 프로젝트는 사용자 중심의 중고 거래 플랫폼으로, 아래와 같은 데이터 모델로 구성되어 있습니다.
+
+## 🔗 주요 엔티티 및 관계
+
+테이블	설명	주요 관계
+| 테이블          | 설명        | 주요 관계                                                        |
+| ------------ | --------- | ------------------------------------------------------------ |
+| **User**     | 사용자 정보 관리 | BBS(1:N), Reply(1:N), Jjim(1:N), Chatroom(1:N), Message(1:N) |
+| **BBS**      | 거래 게시글 정보 | User(1:N), Reply(1:N), Jjim(1:N), Chatroom(1:N)              |
+| **Reply**    | 게시글 댓글    | User(1:N), BBS(1:N)                                          |
+| **Jjim**     | 찜 기능      | User(1:N), BBS(1:N)                                          |
+| **Chatroom** | 1:1 채팅방   | User(1:N)×2, BBS(1:N), Message(1:N)                          |
+| **Message**  | 채팅 메시지    | User(1:N), Chatroom(1:N)                                     |
+
+
+---
+
+
 
 ## 📌 GitHub
 
-> Repository: [kangnamMarket](https://github.com/HONG0805/kangnamMarket)
+> 기존 프로젝트 Repository: [kangnamMarket](https://github.com/HONG0805/kangnamMarket)
 
